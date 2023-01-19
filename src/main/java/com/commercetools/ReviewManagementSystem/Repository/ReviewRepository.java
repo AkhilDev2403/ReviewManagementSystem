@@ -15,8 +15,8 @@ public interface ReviewRepository extends JpaRepository<ReviewEntity, Long> {
 
     @Modifying
     @Transactional
-    @Query(value = "delete from rating_review where product_id = ?1 and customer_id = ?2", nativeQuery = true)
-    Integer deleteByProductId(String pId, String cuId);
+    @Query(value = "delete from rating_review where customer_id = ?1 and  product_id = ?2", nativeQuery = true)
+    Integer deleteByProductId( String cuId, String pId);
 
 
     //to get average of a count.. rating is the column where we store all the ratings given by the user and we set avg rating into average_rating column.

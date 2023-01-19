@@ -34,10 +34,10 @@ public class ReviewService {
     }
 
 
-    public String deleteReview(String pId, String cuId) {
+    public String deleteReview( String cuId, String pId) {
         String returnValue = "Init";
         try {
-            Integer del = repository.deleteByProductId(pId, cuId);
+            Integer del = repository.deleteByProductId(cuId,pId);
             log.info("" + del);
             if (del != 0) {
                 returnValue = "Delete Success";
