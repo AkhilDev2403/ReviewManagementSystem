@@ -1,6 +1,7 @@
 package com.commercetools.ReviewManagementSystem.Service;
 
 import com.commercetools.ReviewManagementSystem.Dto.ReviewDto;
+import com.commercetools.ReviewManagementSystem.Dto.UpdateDto;
 import com.commercetools.ReviewManagementSystem.Entity.ReviewEntity;
 import com.commercetools.ReviewManagementSystem.Repository.ReviewRepository;
 import lombok.extern.slf4j.Slf4j;
@@ -18,14 +19,19 @@ public class ReviewService {
     ReviewRepository repository;
 
 
-    public ReviewDto createReview(ReviewDto reviewDto, String customerId, String productId) {
-        ReviewEntity reviewEntity = new ReviewEntity();
-        reviewEntity.setCustomerId(customerId);
-        reviewEntity.setProductId(productId);
-        reviewEntity.setComment(reviewDto.getComment());
-        reviewEntity.setRating(reviewDto.getRating());
-        repository.save(reviewEntity);
-        return reviewDto;
+    public String createReview(ReviewDto reviewDto, String customerId, String productId) {
+        Optional<String> check = repository.findCustomerExist(customerId, productId);
+        if (check.isEmpty()) {
+            ReviewEntity reviewEntity = new ReviewEntity();
+            reviewEntity.setCustomerId(customerId);
+            reviewEntity.setProductId(productId);
+            reviewEntity.setComment(reviewDto.getComment());
+            reviewEntity.setRating(reviewDto.getRating());
+            repository.save(reviewEntity);
+            return "Review added";
+        }
+        return "Customer not existed";
+
     }
 
 
@@ -34,10 +40,10 @@ public class ReviewService {
     }
 
 
-    public String deleteReview( String cuId, String pId) {
+    public String deleteReview(String cuId, String pId) {
         String returnValue = "Initial";
         try {
-            Integer del = repository.deleteByProductId(cuId,pId);
+            Integer del = repository.deleteByProductId(cuId, pId);
             log.info("" + del);
             if (del != 0) {
                 returnValue = "Delete Success";
@@ -56,5 +62,15 @@ public class ReviewService {
         finalAvgRating = avgRating.orElse(0.0F);
         System.out.printf(String.valueOf(finalAvgRating));
         return finalAvgRating;
+    }
+
+    public String updateReview(UpdateDto updateDto) {
+            ReviewEntity reviewEntity = repository.findByCustomerId(updateDto.getCustomerId());
+            ReviewEntity review = repository.findByProductId(updateDto.getProductId());
+            reviewEntity.setRating(updateDto.getRating());
+            reviewEntity.setComment(updateDto.getComment());
+            repository.save(reviewEntity);
+            repository.save(review);
+            return "updated";
     }
 }

@@ -22,4 +22,13 @@ public interface ReviewRepository extends JpaRepository<ReviewEntity, Long> {
     //to get average of a count.. rating is the column where we store all the ratings given by the user and we set avg rating into average_rating column.
     @Query(value = "SELECT AVG (rating) AS average_rating FROM rating_review where product_id = ?1", nativeQuery = true)
     Optional<Float> getRatingCount(String productId);
+
+   // @Query(value = "SELECT FROM rating_review where ")
+    ReviewEntity findByCustomerId(String customerId);
+
+
+    ReviewEntity findByProductId(String productId);
+
+    @Query(value = "select customer_id from rating_review where customer_id = ?1 and product_id = ?2", nativeQuery = true)
+    Optional<String> findCustomerExist(String customerId, String productId);
 }
