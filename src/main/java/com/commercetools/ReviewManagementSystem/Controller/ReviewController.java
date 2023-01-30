@@ -62,8 +62,8 @@ public class ReviewController {
     //https://7c78-2405-201-f020-b03c-6ca1-4bc7-8f31-ea3b.in.ngrok.io/reviews/add/12/24 - ngrok https (publicly accessible url)
     //https://reviews/add/{customerId}/{productId}
     @PostMapping("/add")
-    public ResponseEntity <Map<String, Object>> addReview(@RequestBody CreateReviewDto dto,
-                                                          @RequestHeader("secret") String secret) {
+    public ResponseEntity<Map<String, Object>> addReview(@RequestBody CreateReviewDto dto,
+                                                         @RequestHeader("secret") String secret) {
         if (Objects.equals(secret, secret_auth_key)) {
             String response = reviewService.createReview(dto);
             HashMap<String, Object> returnValue = new HashMap<>();
@@ -81,7 +81,7 @@ public class ReviewController {
 
 
     @PutMapping("/update")
-    public ResponseEntity <Map<String, Object>> editReview(@RequestBody UpdateDto updateDto,
+    public ResponseEntity<Map<String, Object>> editReview(@RequestBody UpdateDto updateDto,
                                                           @RequestHeader("secret") String secret) {
         if (Objects.equals(secret, secret_auth_key)) {
             String response = reviewService.updateReview(updateDto);
@@ -90,17 +90,36 @@ public class ReviewController {
             if (Objects.equals(response, "Error... Invalid customerId or ProductId.. Please try again..")) {
                 return ResponseEntity.status(HttpStatus.NOT_ACCEPTABLE).body(returnValue);
             }
-            return  ResponseEntity.status(HttpStatus.OK).body(returnValue);
+            return ResponseEntity.status(HttpStatus.OK).body(returnValue);
         }
         HashMap<String, Object> returnValue = new HashMap<>();
         returnValue.put("status", "Error you don't have access to this server !");
         return ResponseEntity.status(HttpStatus.FORBIDDEN).body(returnValue);
     }
 
+    /**
+     * Only this api is using params. Just to understand the functionality of params.
+     *
+     * @param customerId customerId passed in the parameter along the api
+     * @param prId       Pid passed in this api as parameter
+     * @return
+     */
     @DeleteMapping("/delete/{customerId}/{pId}")
-    public String deleteReview(@PathVariable(value = "customerId") String customerId,
-                               @PathVariable(value = "pId") String prId) {
-        return reviewService.deleteReview(customerId, prId);
+    public ResponseEntity<Map<String, Object>> deleteReview(@PathVariable(value = "customerId") String customerId,
+                                                            @PathVariable(value = "pId") String prId,
+                                                            @RequestHeader("secret") String secret) {
+        if (Objects.equals(secret, secret_auth_key)) {
+            String deleteResponse = reviewService.deleteReview(customerId, prId);
+            HashMap<String, Object> returnValue = new HashMap<>();
+            returnValue.put("status", deleteResponse);
+            if (Objects.equals(deleteResponse, "Failed...! Wrong Id... Please try again.")) {
+                return ResponseEntity.status(HttpStatus.NOT_ACCEPTABLE).body(returnValue);
+            }
+            return ResponseEntity.status(HttpStatus.OK).body(returnValue);
+        }
+        HashMap<String, Object> returnValue = new HashMap<>();
+        returnValue.put("status", "Error you don't have access to this server !");
+        return ResponseEntity.status(HttpStatus.FORBIDDEN).body(returnValue);
     }
 
 

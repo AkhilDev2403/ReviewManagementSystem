@@ -47,7 +47,7 @@ public class ReviewService {
             if (del != 0) {
                 returnValue = "Delete Success";
             } else {
-                returnValue = "failed... no id";
+                returnValue = "Failed...! Wrong Id... Please try again.";
             }
         } catch (Exception e) {
             log.error(e + "error");
