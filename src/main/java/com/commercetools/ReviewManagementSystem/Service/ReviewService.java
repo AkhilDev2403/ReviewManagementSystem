@@ -1,5 +1,6 @@
 package com.commercetools.ReviewManagementSystem.Service;
 
+import com.commercetools.ReviewManagementSystem.Dto.CreateReviewDto;
 import com.commercetools.ReviewManagementSystem.Dto.ReviewDto;
 import com.commercetools.ReviewManagementSystem.Dto.UpdateDto;
 import com.commercetools.ReviewManagementSystem.Entity.ReviewEntity;
@@ -7,7 +8,6 @@ import com.commercetools.ReviewManagementSystem.Repository.ReviewRepository;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-
 import java.util.List;
 import java.util.Optional;
 
@@ -19,19 +19,18 @@ public class ReviewService {
     ReviewRepository repository;
 
 
-    public String createReview(ReviewDto reviewDto, String customerId, String productId) {
-        Optional<String> check = repository.findCustomerExist(customerId, productId);
+    public String createReview(CreateReviewDto dto) {
+        Optional<String> check = repository.findCustomerExist(dto.getCustomerId());
         if (check.isEmpty()) {
             ReviewEntity reviewEntity = new ReviewEntity();
-            reviewEntity.setCustomerId(customerId);
-            reviewEntity.setProductId(productId);
-            reviewEntity.setComment(reviewDto.getComment());
-            reviewEntity.setRating(reviewDto.getRating());
+            reviewEntity.setCustomerId(dto.getCustomerId());
+            reviewEntity.setProductId(dto.getProductId());
+            reviewEntity.setRating(dto.getRating());
+            reviewEntity.setComment(dto.getComment());
             repository.save(reviewEntity);
-            return "Review added";
+            return "Review Added Successfully";
         }
-        return "Customer not existed";
-
+        return "You've already reviewed this product!";                              //this comment has to be same in controller also -> if (Objects.equals(response, "You've already added review for this product!")) { ow u can't get the status code
     }
 
 
@@ -65,12 +64,15 @@ public class ReviewService {
     }
 
     public String updateReview(UpdateDto updateDto) {
-            ReviewEntity reviewEntity = repository.findByCustomerId(updateDto.getCustomerId());
-            ReviewEntity review = repository.findByProductId(updateDto.getProductId());
-            reviewEntity.setRating(updateDto.getRating());
-            reviewEntity.setComment(updateDto.getComment());
-            repository.save(reviewEntity);
-            repository.save(review);
-            return "updated";
+        Optional<ReviewEntity> entityList = repository.findByCustomerIdAndProductId(updateDto.getCustomerId(), updateDto.getProductId());
+        if (entityList.isEmpty()) {
+            return "Error... Invalid customerId or ProductId.. Please try again..";
+        }
+        ReviewEntity reviewEntity = repository.findByCustomerId(updateDto.getCustomerId());
+        reviewEntity.setRating(updateDto.getRating());
+        reviewEntity.setComment(updateDto.getComment());
+        repository.save(reviewEntity);
+        return "Review Updated Successfully.....";
     }
+
 }

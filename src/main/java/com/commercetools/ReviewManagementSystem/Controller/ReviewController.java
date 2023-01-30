@@ -1,5 +1,6 @@
 package com.commercetools.ReviewManagementSystem.Controller;
 
+import com.commercetools.ReviewManagementSystem.Dto.CreateReviewDto;
 import com.commercetools.ReviewManagementSystem.Dto.ReviewDto;
 import com.commercetools.ReviewManagementSystem.Dto.UpdateDto;
 import com.commercetools.ReviewManagementSystem.Entity.ReviewEntity;
@@ -60,16 +61,14 @@ public class ReviewController {
 
     //https://7c78-2405-201-f020-b03c-6ca1-4bc7-8f31-ea3b.in.ngrok.io/reviews/add/12/24 - ngrok https (publicly accessible url)
     //https://reviews/add/{customerId}/{productId}
-    @PostMapping("/add/{customerId}/{productId}")
-    public ResponseEntity <Map<String, Object>> addReview(@PathVariable(value = "customerId") String customerId,
-                                                         @PathVariable(value = "productId") String productId,
-                                                         @RequestHeader("secret") String secret,
-                                                         @RequestBody ReviewDto reviewDto) {
+    @PostMapping("/add")
+    public ResponseEntity <Map<String, Object>> addReview(@RequestBody CreateReviewDto dto,
+                                                          @RequestHeader("secret") String secret) {
         if (Objects.equals(secret, secret_auth_key)) {
-            String response = reviewService.createReview(reviewDto, customerId, productId);
+            String response = reviewService.createReview(dto);
             HashMap<String, Object> returnValue = new HashMap<>();
             returnValue.put("status", response);
-            if (Objects.equals(response, "Customer not existed")) {
+            if (Objects.equals(response, "You've already added review for this product!")) {
                 return ResponseEntity.status(HttpStatus.NOT_ACCEPTABLE).body(returnValue);
             }
             return ResponseEntity.status(HttpStatus.CREATED).body(returnValue);
@@ -88,6 +87,9 @@ public class ReviewController {
             String response = reviewService.updateReview(updateDto);
             HashMap<String, Object> returnValue = new HashMap<>();
             returnValue.put("status", response);
+            if (Objects.equals(response, "Error... Invalid customerId or ProductId.. Please try again..")) {
+                return ResponseEntity.status(HttpStatus.NOT_ACCEPTABLE).body(returnValue);
+            }
             return  ResponseEntity.status(HttpStatus.OK).body(returnValue);
         }
         HashMap<String, Object> returnValue = new HashMap<>();
