@@ -2,9 +2,12 @@ package com.commercetools.ReviewManagementSystem.Controller;
 
 import com.commercetools.ReviewManagementSystem.Dto.CreateReviewDto;
 import com.commercetools.ReviewManagementSystem.Dto.ReviewDto;
+import com.commercetools.ReviewManagementSystem.Dto.TestReviewRequest;
 import com.commercetools.ReviewManagementSystem.Dto.UpdateDto;
 import com.commercetools.ReviewManagementSystem.Entity.ReviewEntity;
 import com.commercetools.ReviewManagementSystem.Service.ReviewService;
+import io.swagger.annotations.ApiImplicitParam;
+import io.swagger.annotations.ApiImplicitParams;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpStatus;
@@ -63,13 +66,16 @@ public class ReviewController {
     //https://reviews/add/{customerId}/{productId}
     @PostMapping("/add")
     public ResponseEntity<Map<String, Object>> addReview(@RequestBody CreateReviewDto dto,
-                                                         @RequestHeader("secret") String secret) {
+                                                         @RequestHeader("secret-key") String secret) {
         if (Objects.equals(secret, secret_auth_key)) {
             String response = reviewService.createReview(dto);
             HashMap<String, Object> returnValue = new HashMap<>();
             returnValue.put("status", response);
             if (Objects.equals(response, "You've already added review for this product!")) {
                 return ResponseEntity.status(HttpStatus.NOT_ACCEPTABLE).body(returnValue);
+            }
+            if (Objects.equals(response, "Invalid Rating.. Please try again")) {
+                return ResponseEntity.status(HttpStatus.REQUESTED_RANGE_NOT_SATISFIABLE).body(returnValue);
             }
             return ResponseEntity.status(HttpStatus.CREATED).body(returnValue);
         }
@@ -78,6 +84,7 @@ public class ReviewController {
         returnValue.put("status", "Error: You do not have access to this server !");
         return ResponseEntity.status(HttpStatus.FORBIDDEN).body(returnValue);
     }
+
 
 
     @PutMapping("/update")
@@ -89,6 +96,9 @@ public class ReviewController {
             returnValue.put("status", response);
             if (Objects.equals(response, "Error... Invalid customerId or ProductId.. Please try again..")) {
                 return ResponseEntity.status(HttpStatus.NOT_ACCEPTABLE).body(returnValue);
+            }
+            if (Objects.equals(response, "Invalid Rating.. Please try again")) {
+                return ResponseEntity.status(HttpStatus.REQUESTED_RANGE_NOT_SATISFIABLE).body(returnValue);
             }
             return ResponseEntity.status(HttpStatus.OK).body(returnValue);
         }
@@ -120,6 +130,11 @@ public class ReviewController {
         HashMap<String, Object> returnValue = new HashMap<>();
         returnValue.put("status", "Error you don't have access to this server !");
         return ResponseEntity.status(HttpStatus.FORBIDDEN).body(returnValue);
+    }
+
+    @PostMapping("/addReview")
+    public String add(@RequestBody TestReviewRequest request){
+        return reviewService.addReview(request);
     }
 
 
