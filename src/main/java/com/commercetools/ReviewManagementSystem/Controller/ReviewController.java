@@ -1,13 +1,10 @@
 package com.commercetools.ReviewManagementSystem.Controller;
 
 import com.commercetools.ReviewManagementSystem.Dto.CreateReviewDto;
-import com.commercetools.ReviewManagementSystem.Dto.ReviewDto;
 import com.commercetools.ReviewManagementSystem.Dto.TestReviewRequest;
 import com.commercetools.ReviewManagementSystem.Dto.UpdateDto;
 import com.commercetools.ReviewManagementSystem.Entity.ReviewEntity;
 import com.commercetools.ReviewManagementSystem.Service.ReviewService;
-import io.swagger.annotations.ApiImplicitParam;
-import io.swagger.annotations.ApiImplicitParams;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpStatus;
@@ -21,6 +18,7 @@ import java.util.Objects;
 
 
 @RestController
+@CrossOrigin(origins="*")
 @RequestMapping("reviews")
 public class ReviewController {
 
