@@ -135,5 +135,12 @@ public class ReviewController {
         return reviewService.addReview(request);
     }
 
+    @PostMapping("/test")
+    public String test(@RequestHeader(value = "Authorization") String Authorization,
+                       @RequestHeader(value = "Accept") String Accept){
+
+        return "success";
+    }
+
 
 }
