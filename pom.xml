@@ -47,7 +47,17 @@
 			<artifactId>lombok</artifactId>
 		</dependency>
 
-       <!--Swagger-->
+
+		<!-- https://mvnrepository.com/artifact/org.json/json -->
+		<dependency>
+			<groupId>org.json</groupId>
+			<artifactId>json</artifactId>
+			<version>20210307</version>
+		</dependency>
+
+
+
+		<!--Swagger-->
 		<dependency>
 			<groupId>io.springfox</groupId>
 			<artifactId>springfox-swagger2</artifactId>

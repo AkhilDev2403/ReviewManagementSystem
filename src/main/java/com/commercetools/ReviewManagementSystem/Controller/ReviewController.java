@@ -1,5 +1,6 @@
 package com.commercetools.ReviewManagementSystem.Controller;
 
+import com.commercetools.ReviewManagementSystem.Config.RestClient;
 import com.commercetools.ReviewManagementSystem.Dto.CreateReviewDto;
 import com.commercetools.ReviewManagementSystem.Dto.TestReviewRequest;
 import com.commercetools.ReviewManagementSystem.Dto.UpdateDto;
@@ -27,6 +28,7 @@ public class ReviewController {
 
     @Autowired
     ReviewService reviewService;
+
 
     //http://localhost:8714/reviews/getAll
     @GetMapping("/getAllReviews")
@@ -64,11 +66,16 @@ public class ReviewController {
     //https://reviews/add/{customerId}/{productId}
     @PostMapping("/add")
     public ResponseEntity<Map<String, Object>> addReview(@RequestBody CreateReviewDto dto,
-                                                         @RequestHeader("secret-key") String secret) {
+                                                         @RequestHeader("secret-key") String secret,
+                                                         @RequestHeader("token") String token) {
         if (Objects.equals(secret, secret_auth_key)) {
-            String response = reviewService.createReview(dto);
+            String response = reviewService.createReview(dto, token);
             HashMap<String, Object> returnValue = new HashMap<>();
             returnValue.put("status", response);
+
+            if(Objects.equals(response, "Error... Invalid customer.... Please Log in")){
+                return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(returnValue);
+            }
             if (Objects.equals(response, "You've already added review for this product!")) {
                 return ResponseEntity.status(HttpStatus.NOT_ACCEPTABLE).body(returnValue);
             }
