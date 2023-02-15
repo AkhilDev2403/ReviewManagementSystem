@@ -40,7 +40,7 @@ public class ReviewController {
 
     @GetMapping("/get/AvgRating/{productId}")
     public ResponseEntity<Map<String, Object>> getAvgRating(@PathVariable(value = "productId") String productId,
-                                                            @RequestHeader("secret") String secret) {
+                                                            @RequestHeader("secret-key") String secret) {
         if (Objects.equals(secret, secret_auth_key)) {
             float avg = reviewService.getAvgRating(productId);
             HashMap<String, Object> returnValue = new HashMap<>();
@@ -58,9 +58,9 @@ public class ReviewController {
     @PostMapping("/add")
     public ResponseEntity<Map<String, Object>> addReview(@RequestBody CreateReviewDto dto,
                                                          @RequestHeader("secret-key") String secret,
-                                                         @RequestHeader("token") String token) {
+                                                         @RequestHeader("Authorization") String authorization) {
         if (Objects.equals(secret, secret_auth_key)) {
-            String response = reviewService.createReview(dto, token);
+            String response = reviewService.createReview(dto, authorization);
             HashMap<String, Object> returnValue = new HashMap<>();
             returnValue.put("status", response);
 
@@ -84,10 +84,10 @@ public class ReviewController {
 
     @PutMapping("/update")
     public ResponseEntity<Map<String, Object>> editReview(@RequestBody UpdateDto updateDto,
-                                                          @RequestHeader("secret") String secret,
-                                                          @RequestHeader("token") String token) {
+                                                          @RequestHeader("secret-key") String secret,
+                                                          @RequestHeader("Authorization") String authorization) {
         if (Objects.equals(secret, secret_auth_key)) {
-            String response = reviewService.updateReview(updateDto, token);
+            String response = reviewService.updateReview(updateDto, authorization);
             HashMap<String, Object> returnValue = new HashMap<>();
             returnValue.put("status", response);
 
@@ -117,10 +117,10 @@ public class ReviewController {
     @DeleteMapping("/delete/{customerId}/{pId}")
     public ResponseEntity<Map<String, Object>> deleteReview(@PathVariable(value = "customerId") String customerId,
                                                             @PathVariable(value = "pId") String prId,
-                                                            @RequestHeader("secret") String secret,
-                                                            @RequestHeader("token") String token) {
+                                                            @RequestHeader("secret-key") String secret,
+                                                            @RequestHeader("Authorization") String authorization) {
         if (Objects.equals(secret, secret_auth_key)) {
-            String deleteResponse = reviewService.deleteReview(customerId, prId, token);
+            String deleteResponse = reviewService.deleteReview(customerId, prId, authorization);
             HashMap<String, Object> returnValue = new HashMap<>();
             returnValue.put("status", deleteResponse);
             if (Objects.equals(deleteResponse, "Error... Invalid customer.... Please Log in")) {
