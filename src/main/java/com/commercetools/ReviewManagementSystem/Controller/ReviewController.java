@@ -19,7 +19,7 @@ import java.util.Objects;
 
 
 @RestController
-@CrossOrigin(origins="*")
+@CrossOrigin(origins = "*")
 @RequestMapping("reviews")
 public class ReviewController {
 
@@ -37,15 +37,6 @@ public class ReviewController {
 
     }
 
-//    @ApiImplicitParams({
-//            @ApiImplicitParam(
-//                    required = true,
-//                    name = "authorization",
-//                    value = "bearer-token",
-//                    dataType = "java.lang.String",
-//                    paramType = "header"
-//            )
-//    })
 
     @GetMapping("/get/AvgRating/{productId}")
     public ResponseEntity<Map<String, Object>> getAvgRating(@PathVariable(value = "productId") String productId,
@@ -73,7 +64,7 @@ public class ReviewController {
             HashMap<String, Object> returnValue = new HashMap<>();
             returnValue.put("status", response);
 
-            if(Objects.equals(response, "Error... Invalid customer.... Please Log in")){
+            if (Objects.equals(response, "Error... Invalid customer.... Please Log in")) {
                 return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(returnValue);
             }
             if (Objects.equals(response, "You've already added review for this product!")) {
@@ -91,15 +82,19 @@ public class ReviewController {
     }
 
 
-
     @PutMapping("/update")
     public ResponseEntity<Map<String, Object>> editReview(@RequestBody UpdateDto updateDto,
-                                                          @RequestHeader("secret") String secret) {
+                                                          @RequestHeader("secret") String secret,
+                                                          @RequestHeader("token") String token) {
         if (Objects.equals(secret, secret_auth_key)) {
-            String response = reviewService.updateReview(updateDto);
+            String response = reviewService.updateReview(updateDto, token);
             HashMap<String, Object> returnValue = new HashMap<>();
             returnValue.put("status", response);
-            if (Objects.equals(response, "Error... Invalid customerId or ProductId.. Please try again..")) {
+
+            if (Objects.equals(response, "Error... Invalid customer.... Please Log in")) {
+                return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(returnValue);
+            }
+            if (Objects.equals(response, "Error... Invalid ProductId.. Please try again..")) {
                 return ResponseEntity.status(HttpStatus.NOT_ACCEPTABLE).body(returnValue);
             }
             if (Objects.equals(response, "Invalid Rating.. Please try again")) {
@@ -122,12 +117,16 @@ public class ReviewController {
     @DeleteMapping("/delete/{customerId}/{pId}")
     public ResponseEntity<Map<String, Object>> deleteReview(@PathVariable(value = "customerId") String customerId,
                                                             @PathVariable(value = "pId") String prId,
-                                                            @RequestHeader("secret") String secret) {
+                                                            @RequestHeader("secret") String secret,
+                                                            @RequestHeader("token") String token) {
         if (Objects.equals(secret, secret_auth_key)) {
-            String deleteResponse = reviewService.deleteReview(customerId, prId);
+            String deleteResponse = reviewService.deleteReview(customerId, prId, token);
             HashMap<String, Object> returnValue = new HashMap<>();
             returnValue.put("status", deleteResponse);
-            if (Objects.equals(deleteResponse, "Failed...! Wrong Id... Please try again.")) {
+            if (Objects.equals(deleteResponse, "Error... Invalid customer.... Please Log in")) {
+                return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(returnValue);
+            }
+            if (Objects.equals(deleteResponse, "Failed...! No such product Exists.. Please try again.")) {
                 return ResponseEntity.status(HttpStatus.NOT_ACCEPTABLE).body(returnValue);
             }
             return ResponseEntity.status(HttpStatus.OK).body(returnValue);
@@ -137,14 +136,16 @@ public class ReviewController {
         return ResponseEntity.status(HttpStatus.FORBIDDEN).body(returnValue);
     }
 
+    //just for testing
     @PostMapping("/addReview")
-    public String add(@RequestBody TestReviewRequest request){
+    public String addRe(@RequestBody TestReviewRequest request) {
         return reviewService.addReview(request);
     }
 
+    //just for testing
     @PostMapping("/test")
     public String test(@RequestHeader(value = "Authorization") String Authorization,
-                       @RequestHeader(value = "Accept") String Accept){
+                       @RequestHeader(value = "Accept") String Accept) {
 
         return "success";
     }

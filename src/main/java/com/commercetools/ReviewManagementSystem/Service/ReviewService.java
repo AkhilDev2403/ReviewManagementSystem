@@ -80,20 +80,24 @@ public class ReviewService {
     }
 
 
-    public String deleteReview(String cuId, String pId) {
-        String returnValue = "Initial";
-        try {
-            Integer del = repository.deleteByProductId(cuId, pId);
-            log.info("" + del);
-            if (del != 0) {
-                returnValue = "Delete Success";
-            } else {
-                returnValue = "Failed...! Wrong Id... Please try again.";
+    public String deleteReview(String cuId, String pId, String token) {
+        String commercetoolsCustomerId = getCommercetoolsCustomer(token);
+        if (commercetoolsCustomerId.matches(cuId)) {
+            String returnValue = "Initial";
+            try {
+                Integer del = repository.deleteByProductId(cuId, pId);
+                log.info("" + del);
+                if (del != 0) {
+                    returnValue = "Delete Success";
+                } else {
+                    returnValue = "Failed...! No such product Exists.. Please try again.";
+                }
+            } catch (Exception e) {
+                log.error(e + "error");
             }
-        } catch (Exception e) {
-            log.error(e + "error");
+            return returnValue;
         }
-        return returnValue;
+        return "Error... Invalid customer.... Please Log in";
     }
 
     public float getAvgRating(String productId) {
@@ -104,23 +108,32 @@ public class ReviewService {
         return finalAvgRating;
     }
 
-    public String updateReview(UpdateDto updateDto) {
+    public String updateReview(UpdateDto updateDto, String token) {
         Optional<ReviewEntity> entityList = repository.findByCustomerIdAndProductId(updateDto.getCustomerId(), updateDto.getProductId());
-        if (entityList.isEmpty()) {
-            return "Error... Invalid customerId or ProductId.. Please try again..";
+        String commercetoolsCustomerId = getCommercetoolsCustomer(token);
+        Optional<String> check = repository.findCustomerExist(updateDto.getCustomerId());
+        String customerId = updateDto.getCustomerId();
+        if (commercetoolsCustomerId.matches(customerId)) {
+            if (entityList.isEmpty()) {
+                return "Error... Invalid ProductId.. Please try again..";
+            }
+            float rating = updateDto.getRating();
+            if (rating <= 10) {
+                ReviewEntity reviewEntity = repository.findByCustomerId(updateDto.getCustomerId());
+                reviewEntity.setRating(updateDto.getRating());
+                reviewEntity.setComment(updateDto.getComment());
+                repository.save(reviewEntity);
+            } else {
+                return "Invalid Rating.. Please try again";
+            }
+            return "Review Updated Successfully.....";
         }
-        float rating = updateDto.getRating();
-        if (rating <= 10) {
-            ReviewEntity reviewEntity = repository.findByCustomerId(updateDto.getCustomerId());
-            reviewEntity.setRating(updateDto.getRating());
-            reviewEntity.setComment(updateDto.getComment());
-            repository.save(reviewEntity);
-        } else {
-            return "Invalid Rating.. Please try again";
+        else {
+            return "Error... Invalid customer.... Please Log in";
         }
-        return "Review Updated Successfully.....";
     }
 
+    //just for testing
     public String addReview(TestReviewRequest request) {
         TestEntity entity = new TestEntity();
         entity.setName(request.getName());
