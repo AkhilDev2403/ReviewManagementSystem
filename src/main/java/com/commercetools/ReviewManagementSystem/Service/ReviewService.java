@@ -24,17 +24,14 @@ public class ReviewService {
     @Autowired
     ReviewRepository repository;
 
-    @Autowired
-    TestReviewRepository testReviewRepository;
-
 
     public String createReview(CreateReviewDto dto, String token) {
         String commercetoolsCustomerId = getCommercetoolsCustomer(token);
         System.out.println("commercetools customer ID = " + commercetoolsCustomerId);
-        Optional<String> check = repository.findCustomerExist(dto.getCustomerId());
+        Optional<String> checkProductExist = repository.findProductExist(dto.getProductId(), dto.getCustomerId());
         String customerId = dto.getCustomerId();
         if (commercetoolsCustomerId.matches(customerId)) {
-            if (check.isEmpty()) {
+            if (checkProductExist.isEmpty()) {
                 float rating = dto.getRating();
                 if (rating <= 10) {
                     ReviewEntity reviewEntity = new ReviewEntity();
@@ -111,7 +108,7 @@ public class ReviewService {
     public String updateReview(UpdateDto updateDto, String token) {
         Optional<ReviewEntity> entityList = repository.findByCustomerIdAndProductId(updateDto.getCustomerId(), updateDto.getProductId());
         String commercetoolsCustomerId = getCommercetoolsCustomer(token);
-        Optional<String> check = repository.findCustomerExist(updateDto.getCustomerId());
+       // Optional<String> check = repository.findCustomerExist(updateDto.getCustomerId());
         String customerId = updateDto.getCustomerId();
         if (commercetoolsCustomerId.matches(customerId)) {
             if (entityList.isEmpty()) {
@@ -119,29 +116,31 @@ public class ReviewService {
             }
             float rating = updateDto.getRating();
             if (rating <= 10) {
-                ReviewEntity reviewEntity = repository.findByCustomerId(updateDto.getCustomerId());
-                reviewEntity.setRating(updateDto.getRating());
-                reviewEntity.setComment(updateDto.getComment());
-                repository.save(reviewEntity);
+                ReviewEntity entity = repository.findByCustomerDetails(updateDto.getCustomerId());
+                System.out.println(entity);
+                entity.setRating(updateDto.getRating());
+                entity.setComment(updateDto.getComment());
+                repository.save(entity);
             } else {
+
                 return "Invalid Rating.. Please try again";
             }
             return "Review Updated Successfully.....";
         }
-        else {
+
             return "Error... Invalid customer.... Please Log in";
-        }
+
     }
 
     //just for testing
-    public String addReview(TestReviewRequest request) {
-        TestEntity entity = new TestEntity();
-        entity.setName(request.getName());
-        entity.setRating(request.getRating());
-        entity.setReview(request.getReview());
-        testReviewRepository.save(entity);
-        return "success";
-    }
+//    public String addReview(TestReviewRequest request) {
+//        TestEntity entity = new TestEntity();
+//        entity.setName(request.getName());
+//        entity.setRating(request.getRating());
+//        entity.setReview(request.getReview());
+//        testReviewRepository.save(entity);
+//        return "success";
+//    }
 }
 
 
