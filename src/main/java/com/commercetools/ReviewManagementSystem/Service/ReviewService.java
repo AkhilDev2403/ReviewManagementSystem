@@ -1,12 +1,9 @@
 package com.commercetools.ReviewManagementSystem.Service;
 
 import com.commercetools.ReviewManagementSystem.Dto.CreateReviewDto;
-import com.commercetools.ReviewManagementSystem.Dto.TestReviewRequest;
 import com.commercetools.ReviewManagementSystem.Dto.UpdateDto;
 import com.commercetools.ReviewManagementSystem.Entity.ReviewEntity;
-import com.commercetools.ReviewManagementSystem.Entity.TestEntity;
 import com.commercetools.ReviewManagementSystem.Repository.ReviewRepository;
-import com.commercetools.ReviewManagementSystem.Repository.TestReviewRepository;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpEntity;
@@ -105,10 +102,11 @@ public class ReviewService {
         return finalAvgRating;
     }
 
+
+
     public String updateReview(UpdateDto updateDto, String token) {
         Optional<ReviewEntity> entityList = repository.findByCustomerIdAndProductId(updateDto.getCustomerId(), updateDto.getProductId());
         String commercetoolsCustomerId = getCommercetoolsCustomer(token);
-       // Optional<String> check = repository.findCustomerExist(updateDto.getCustomerId());
         String customerId = updateDto.getCustomerId();
         if (commercetoolsCustomerId.matches(customerId)) {
             if (entityList.isEmpty()) {
@@ -116,7 +114,7 @@ public class ReviewService {
             }
             float rating = updateDto.getRating();
             if (rating <= 10) {
-                ReviewEntity entity = repository.findByCustomerDetails(updateDto.getCustomerId());
+                ReviewEntity entity = repository.findByCustomerDetails(updateDto.getCustomerId(), updateDto.getProductId());
                 System.out.println(entity);
                 entity.setRating(updateDto.getRating());
                 entity.setComment(updateDto.getComment());
@@ -132,15 +130,7 @@ public class ReviewService {
 
     }
 
-    //just for testing
-//    public String addReview(TestReviewRequest request) {
-//        TestEntity entity = new TestEntity();
-//        entity.setName(request.getName());
-//        entity.setRating(request.getRating());
-//        entity.setReview(request.getReview());
-//        testReviewRepository.save(entity);
-//        return "success";
-//    }
+
 }
 
 
