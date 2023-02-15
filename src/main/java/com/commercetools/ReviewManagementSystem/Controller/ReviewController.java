@@ -137,10 +137,10 @@ public class ReviewController {
     }
 
     //just for testing
-    @PostMapping("/addReview")
-    public String addRe(@RequestBody TestReviewRequest request) {
-        return reviewService.addReview(request);
-    }
+//    @PostMapping("/addReview")
+//    public String addRe(@RequestBody TestReviewRequest request) {
+//        return reviewService.addReview(request);
+//    }
 
     //just for testing
     @PostMapping("/test")

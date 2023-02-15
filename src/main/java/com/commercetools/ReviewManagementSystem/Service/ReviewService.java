@@ -1,12 +1,9 @@
 package com.commercetools.ReviewManagementSystem.Service;
 
 import com.commercetools.ReviewManagementSystem.Dto.CreateReviewDto;
-import com.commercetools.ReviewManagementSystem.Dto.TestReviewRequest;
 import com.commercetools.ReviewManagementSystem.Dto.UpdateDto;
 import com.commercetools.ReviewManagementSystem.Entity.ReviewEntity;
-import com.commercetools.ReviewManagementSystem.Entity.TestEntity;
 import com.commercetools.ReviewManagementSystem.Repository.ReviewRepository;
-import com.commercetools.ReviewManagementSystem.Repository.TestReviewRepository;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpEntity;
@@ -24,17 +21,14 @@ public class ReviewService {
     @Autowired
     ReviewRepository repository;
 
-    @Autowired
-    TestReviewRepository testReviewRepository;
-
 
     public String createReview(CreateReviewDto dto, String token) {
         String commercetoolsCustomerId = getCommercetoolsCustomer(token);
         System.out.println("commercetools customer ID = " + commercetoolsCustomerId);
-        Optional<String> check = repository.findCustomerExist(dto.getCustomerId());
+        Optional<String> checkProductExist = repository.findProductExist(dto.getProductId(), dto.getCustomerId());
         String customerId = dto.getCustomerId();
         if (commercetoolsCustomerId.matches(customerId)) {
-            if (check.isEmpty()) {
+            if (checkProductExist.isEmpty()) {
                 float rating = dto.getRating();
                 if (rating <= 10) {
                     ReviewEntity reviewEntity = new ReviewEntity();
@@ -108,10 +102,11 @@ public class ReviewService {
         return finalAvgRating;
     }
 
+
+
     public String updateReview(UpdateDto updateDto, String token) {
         Optional<ReviewEntity> entityList = repository.findByCustomerIdAndProductId(updateDto.getCustomerId(), updateDto.getProductId());
         String commercetoolsCustomerId = getCommercetoolsCustomer(token);
-        Optional<String> check = repository.findCustomerExist(updateDto.getCustomerId());
         String customerId = updateDto.getCustomerId();
         if (commercetoolsCustomerId.matches(customerId)) {
             if (entityList.isEmpty()) {
@@ -119,29 +114,23 @@ public class ReviewService {
             }
             float rating = updateDto.getRating();
             if (rating <= 10) {
-                ReviewEntity reviewEntity = repository.findByCustomerId(updateDto.getCustomerId());
-                reviewEntity.setRating(updateDto.getRating());
-                reviewEntity.setComment(updateDto.getComment());
-                repository.save(reviewEntity);
+                ReviewEntity entity = repository.findByCustomerDetails(updateDto.getCustomerId(), updateDto.getProductId());
+                System.out.println(entity);
+                entity.setRating(updateDto.getRating());
+                entity.setComment(updateDto.getComment());
+                repository.save(entity);
             } else {
+
                 return "Invalid Rating.. Please try again";
             }
             return "Review Updated Successfully.....";
         }
-        else {
+
             return "Error... Invalid customer.... Please Log in";
-        }
+
     }
 
-    //just for testing
-    public String addReview(TestReviewRequest request) {
-        TestEntity entity = new TestEntity();
-        entity.setName(request.getName());
-        entity.setRating(request.getRating());
-        entity.setReview(request.getReview());
-        testReviewRepository.save(entity);
-        return "success";
-    }
+
 }
 
 
