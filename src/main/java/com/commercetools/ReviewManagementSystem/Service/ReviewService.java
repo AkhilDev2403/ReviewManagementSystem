@@ -6,6 +6,10 @@ import com.commercetools.ReviewManagementSystem.Entity.ReviewEntity;
 import com.commercetools.ReviewManagementSystem.Repository.ReviewRepository;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.ResponseEntity;
@@ -69,8 +73,10 @@ public class ReviewService {
         return cId;
     }
 
-    public List<ReviewEntity> getAllReview() {
-        return repository.findAllReviews();
+    public Page<ReviewEntity> getAllReview(Integer pageNumber, Integer pageSize) {
+        //Sort sort = Sort.by(Sort.Direction.ASC, "comment");
+        Pageable pageable = PageRequest.of(pageNumber, pageSize);
+        return repository.findAll(pageable);
     }
 
 
