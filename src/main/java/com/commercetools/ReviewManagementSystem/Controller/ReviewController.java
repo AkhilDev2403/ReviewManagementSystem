@@ -8,6 +8,7 @@ import com.commercetools.ReviewManagementSystem.Entity.ReviewEntity;
 import com.commercetools.ReviewManagementSystem.Service.ReviewService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.data.domain.Page;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -31,9 +32,10 @@ public class ReviewController {
 
 
     //http://localhost:8714/reviews/getAll
-    @GetMapping("/getAllReviews")
-    public List<ReviewEntity> getAllReviews() {
-        return reviewService.getAllReview();
+    @GetMapping("/getAllReviews/{pageNumber}/{pageSize}")
+    public Page<ReviewEntity> getAllReviews(@PathVariable Integer pageNumber,
+                                            @PathVariable Integer pageSize) {
+        return reviewService.getAllReview(pageNumber, pageSize);
 
     }
 
