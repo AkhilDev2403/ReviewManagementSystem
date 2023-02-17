@@ -2,9 +2,9 @@ package com.commercetools.reviewmanagementsystem.model;
 
 public class ReviewResponse {
 
-     private String comment;
+    private String comment;
 
-     private String rating;
+    private String rating;
 
     public String getRating() {
         return rating;

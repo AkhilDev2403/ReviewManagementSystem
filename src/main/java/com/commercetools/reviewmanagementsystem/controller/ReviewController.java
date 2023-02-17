@@ -29,7 +29,6 @@ public class ReviewController {
     ReviewService reviewService;
 
 
-
     //http://localhost:8714/reviews/getAll
     @GetMapping("/getAllReviews/{pageNumber}/{pageSize}")
     public Page<ReviewEntity> getAllReviews(@PathVariable Integer pageNumber,
@@ -135,7 +134,6 @@ public class ReviewController {
         returnValue.put(ResponseMessage.STATUS, ResponseMessage.UNAUTHORIZED_ACCESS);
         return ResponseEntity.status(HttpStatus.FORBIDDEN).body(returnValue);
     }
-
 
 
 }
