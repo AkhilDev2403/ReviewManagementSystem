@@ -1,4 +1,4 @@
-package com.commercetools.ReviewManagementSystem.Dto;
+package com.commercetools.reviewmanagementsystem.dto;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;

@@ -1,6 +1,6 @@
-package com.commercetools.ReviewManagementSystem.Repository;
+package com.commercetools.reviewmanagementsystem.repository;
 
-import com.commercetools.ReviewManagementSystem.Entity.ReviewEntity;
+import com.commercetools.reviewmanagementsystem.entity.ReviewEntity;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;

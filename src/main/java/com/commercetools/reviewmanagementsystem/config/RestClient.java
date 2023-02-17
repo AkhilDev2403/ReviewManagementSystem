@@ -1,6 +1,6 @@
-package com.commercetools.ReviewManagementSystem.Config;
+package com.commercetools.reviewmanagementsystem.config;
 
-import com.commercetools.ReviewManagementSystem.Dto.SignUpDto;
+import com.commercetools.reviewmanagementsystem.dto.SignUpDto;
 import org.springframework.http.*;
 import org.springframework.web.client.RestTemplate;
 

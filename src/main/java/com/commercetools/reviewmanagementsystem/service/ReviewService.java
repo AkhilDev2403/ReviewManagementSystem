@@ -1,15 +1,14 @@
-package com.commercetools.ReviewManagementSystem.Service;
+package com.commercetools.reviewmanagementsystem.service;
 
-import com.commercetools.ReviewManagementSystem.Dto.CreateReviewDto;
-import com.commercetools.ReviewManagementSystem.Dto.UpdateDto;
-import com.commercetools.ReviewManagementSystem.Entity.ReviewEntity;
-import com.commercetools.ReviewManagementSystem.Repository.ReviewRepository;
+import com.commercetools.reviewmanagementsystem.dto.CreateReviewDto;
+import com.commercetools.reviewmanagementsystem.dto.UpdateDto;
+import com.commercetools.reviewmanagementsystem.entity.ReviewEntity;
+import com.commercetools.reviewmanagementsystem.repository.ReviewRepository;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
-import org.springframework.data.domain.Sort;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.ResponseEntity;
@@ -28,7 +27,7 @@ public class ReviewService {
 
     public String createReview(CreateReviewDto dto, String token) {
         String commercetoolsCustomerId = getCommercetoolsCustomer(token);
-        System.out.println("commercetools customer ID = " + commercetoolsCustomerId);
+        log.info("commercetools customer ID = " + commercetoolsCustomerId);
         Optional<String> checkProductExist = repository.findProductExist(dto.getProductId(), dto.getCustomerId());
         String customerId = dto.getCustomerId();
         if (commercetoolsCustomerId.matches(customerId)) {
@@ -46,9 +45,9 @@ public class ReviewService {
                 }
                 return "Review Added Successfully";
             }
-            return "You've already reviewed this product!";                              //this comment has to be same in controller also -> if (Objects.equals(response, "You've already added review for this product!")) { ow u can't get the status code
+            return "You've already reviewed this product!";
         } else {
-            return "Error... Invalid customer.... Please Log in";
+            return "Error...Invalid customer.... Please Log in";
         }
 
     }
@@ -67,12 +66,11 @@ public class ReviewService {
         result = (LinkedHashMap) result.get("customer");
         String cId = (String) result.get("customerId");
         log.info(cId);
-        System.out.println(result.get("firstName"));
+        log.info((String) result.get("firstName"));
         return cId;
     }
 
     public Page<ReviewEntity> getAllReview(Integer pageNumber, Integer pageSize) {
-        //Sort sort = Sort.by(Sort.Direction.ASC, "comment");
         Pageable pageable = PageRequest.of(pageNumber, pageSize);
         return repository.findAll(pageable);
     }
@@ -102,7 +100,7 @@ public class ReviewService {
         Optional<Float> avgRating = repository.getRatingCount(productId);
         float finalAvgRating;
         finalAvgRating = avgRating.orElse(0.0F);
-        System.out.printf(String.valueOf(finalAvgRating));
+        log.info(String.valueOf(finalAvgRating));
         return finalAvgRating;
     }
 
@@ -118,7 +116,7 @@ public class ReviewService {
             float rating = updateDto.getRating();
             if (rating <= 10) {
                 ReviewEntity entity = repository.findByCustomerDetails(updateDto.getCustomerId(), updateDto.getProductId());
-                System.out.println(entity);
+                log.info(String.valueOf(entity));
                 entity.setRating(updateDto.getRating());
                 entity.setComment(updateDto.getComment());
                 repository.save(entity);

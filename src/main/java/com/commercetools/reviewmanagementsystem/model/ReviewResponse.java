@@ -1,4 +1,4 @@
-package com.commercetools.ReviewManagementSystem.Model;
+package com.commercetools.reviewmanagementsystem.model;
 
 public class ReviewResponse {
 

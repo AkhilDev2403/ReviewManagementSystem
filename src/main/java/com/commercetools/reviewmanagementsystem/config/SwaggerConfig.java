@@ -1,4 +1,4 @@
-package com.commercetools.ReviewManagementSystem.Config;
+package com.commercetools.reviewmanagementsystem.config;
 
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;

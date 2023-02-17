@@ -1,9 +1,10 @@
-package com.commercetools.ReviewManagementSystem.Controller;
+package com.commercetools.reviewmanagementsystem.controller;
 
-import com.commercetools.ReviewManagementSystem.Dto.CreateReviewDto;
-import com.commercetools.ReviewManagementSystem.Dto.UpdateDto;
-import com.commercetools.ReviewManagementSystem.Entity.ReviewEntity;
-import com.commercetools.ReviewManagementSystem.Service.ReviewService;
+import com.commercetools.reviewmanagementsystem.constants.ResponseMessage;
+import com.commercetools.reviewmanagementsystem.dto.CreateReviewDto;
+import com.commercetools.reviewmanagementsystem.dto.UpdateDto;
+import com.commercetools.reviewmanagementsystem.entity.ReviewEntity;
+import com.commercetools.reviewmanagementsystem.service.ReviewService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.domain.Page;
@@ -22,10 +23,11 @@ import java.util.Objects;
 public class ReviewController {
 
     @Value("${secret_auth_key}")
-    private String secret_auth_key;
+    private String secretAuthKey;
 
     @Autowired
     ReviewService reviewService;
+
 
 
     //http://localhost:8714/reviews/getAll
@@ -40,43 +42,42 @@ public class ReviewController {
     @GetMapping("/get/AvgRating/{productId}")
     public ResponseEntity<Map<String, Object>> getAvgRating(@PathVariable(value = "productId") String productId,
                                                             @RequestHeader("secret-key") String secret) {
-        if (Objects.equals(secret, secret_auth_key)) {
+        if (Objects.equals(secret, secretAuthKey)) {
             float avg = reviewService.getAvgRating(productId);
             HashMap<String, Object> returnValue = new HashMap<>();
-            returnValue.put("average rating", avg);
+            returnValue.put(ResponseMessage.AVG_RATING, avg);
             return ResponseEntity.status(HttpStatus.FOUND).body(returnValue);
         }
 
         HashMap<String, Object> returnValue = new HashMap<>();
-        returnValue.put("status", "Error: You do not have access to this server !");
+        returnValue.put(ResponseMessage.STATUS, ResponseMessage.UNAUTHORIZED_ACCESS);
         return ResponseEntity.status(HttpStatus.FORBIDDEN).body(returnValue);
     }
 
-    //https://7c78-2405-201-f020-b03c-6ca1-4bc7-8f31-ea3b.in.ngrok.io/reviews/add/12/24 - ngrok https (publicly accessible url)
-    //https://reviews/add/{customerId}/{productId}
+
     @PostMapping("/add")
     public ResponseEntity<Map<String, Object>> addReview(@RequestBody CreateReviewDto dto,
                                                          @RequestHeader("secret-key") String secret,
                                                          @RequestHeader("Authorization") String authorization) {
-        if (Objects.equals(secret, secret_auth_key)) {
+        if (Objects.equals(secret, secretAuthKey)) {
             String response = reviewService.createReview(dto, authorization);
             HashMap<String, Object> returnValue = new HashMap<>();
-            returnValue.put("status", response);
+            returnValue.put(ResponseMessage.STATUS, response);
 
-            if (Objects.equals(response, "Error... Invalid customer.... Please Log in")) {
+            if (Objects.equals(response, ResponseMessage.INVALID_CUSTOMER)) {
                 return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(returnValue);
             }
-            if (Objects.equals(response, "You've already added review for this product!")) {
+            if (Objects.equals(response, ResponseMessage.ALREADY_REVIEWED)) {
                 return ResponseEntity.status(HttpStatus.NOT_ACCEPTABLE).body(returnValue);
             }
-            if (Objects.equals(response, "Invalid Rating.. Please try again")) {
+            if (Objects.equals(response, ResponseMessage.INVALID_RATING)) {
                 return ResponseEntity.status(HttpStatus.REQUESTED_RANGE_NOT_SATISFIABLE).body(returnValue);
             }
             return ResponseEntity.status(HttpStatus.CREATED).body(returnValue);
         }
 
         HashMap<String, Object> returnValue = new HashMap<>();
-        returnValue.put("status", "Error: You do not have access to this server !");
+        returnValue.put(ResponseMessage.STATUS, ResponseMessage.UNAUTHORIZED_ACCESS);
         return ResponseEntity.status(HttpStatus.FORBIDDEN).body(returnValue);
     }
 
@@ -85,24 +86,24 @@ public class ReviewController {
     public ResponseEntity<Map<String, Object>> editReview(@RequestBody UpdateDto updateDto,
                                                           @RequestHeader("secret-key") String secret,
                                                           @RequestHeader("Authorization") String authorization) {
-        if (Objects.equals(secret, secret_auth_key)) {
+        if (Objects.equals(secret, secretAuthKey)) {
             String response = reviewService.updateReview(updateDto, authorization);
             HashMap<String, Object> returnValue = new HashMap<>();
-            returnValue.put("status", response);
+            returnValue.put(ResponseMessage.STATUS, response);
 
-            if (Objects.equals(response, "Error... Invalid customer.... Please Log in")) {
+            if (Objects.equals(response, ResponseMessage.INVALID_CUSTOMER)) {
                 return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(returnValue);
             }
-            if (Objects.equals(response, "Error... Invalid ProductId.. Please try again..")) {
+            if (Objects.equals(response, ResponseMessage.INVALID_PRODUCT)) {
                 return ResponseEntity.status(HttpStatus.NOT_ACCEPTABLE).body(returnValue);
             }
-            if (Objects.equals(response, "Invalid Rating.. Please try again")) {
+            if (Objects.equals(response, ResponseMessage.INVALID_RATING)) {
                 return ResponseEntity.status(HttpStatus.REQUESTED_RANGE_NOT_SATISFIABLE).body(returnValue);
             }
             return ResponseEntity.status(HttpStatus.OK).body(returnValue);
         }
         HashMap<String, Object> returnValue = new HashMap<>();
-        returnValue.put("status", "Error you don't have access to this server !");
+        returnValue.put(ResponseMessage.STATUS, ResponseMessage.UNAUTHORIZED_ACCESS);
         return ResponseEntity.status(HttpStatus.FORBIDDEN).body(returnValue);
     }
 
@@ -118,36 +119,23 @@ public class ReviewController {
                                                             @PathVariable(value = "pId") String prId,
                                                             @RequestHeader("secret-key") String secret,
                                                             @RequestHeader("Authorization") String authorization) {
-        if (Objects.equals(secret, secret_auth_key)) {
+        if (Objects.equals(secret, secretAuthKey)) {
             String deleteResponse = reviewService.deleteReview(customerId, prId, authorization);
             HashMap<String, Object> returnValue = new HashMap<>();
-            returnValue.put("status", deleteResponse);
-            if (Objects.equals(deleteResponse, "Error... Invalid customer.... Please Log in")) {
+            returnValue.put(ResponseMessage.STATUS, deleteResponse);
+            if (Objects.equals(deleteResponse, ResponseMessage.INVALID_CUSTOMER)) {
                 return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(returnValue);
             }
-            if (Objects.equals(deleteResponse, "Failed...! No such product Exists.. Please try again.")) {
+            if (Objects.equals(deleteResponse, ResponseMessage.NO_SUCH_PRODUCT)) {
                 return ResponseEntity.status(HttpStatus.NOT_ACCEPTABLE).body(returnValue);
             }
             return ResponseEntity.status(HttpStatus.OK).body(returnValue);
         }
         HashMap<String, Object> returnValue = new HashMap<>();
-        returnValue.put("status", "Error you don't have access to this server !");
+        returnValue.put(ResponseMessage.STATUS, ResponseMessage.UNAUTHORIZED_ACCESS);
         return ResponseEntity.status(HttpStatus.FORBIDDEN).body(returnValue);
     }
 
-    //just for testing
-//    @PostMapping("/addReview")
-//    public String addRe(@RequestBody TestReviewRequest request) {
-//        return reviewService.addReview(request);
-//    }
-
-    //just for testing
-    @PostMapping("/test")
-    public String test(@RequestHeader(value = "Authorization") String Authorization,
-                       @RequestHeader(value = "Accept") String Accept) {
-
-        return "success";
-    }
 
 
 }
