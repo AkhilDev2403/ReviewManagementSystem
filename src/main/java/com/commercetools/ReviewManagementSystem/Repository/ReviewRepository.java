@@ -23,9 +23,6 @@ public interface ReviewRepository extends JpaRepository<ReviewEntity, Long> {
     @Query(value = "SELECT AVG (rating) AS average_rating FROM rating_review where product_id = ?1", nativeQuery = true)
     Optional<Float> getRatingCount(String productId);
 
-//    @Query(value = "select customer_id from rating_review where customer_id = ?1", nativeQuery = true)
-//    ReviewEntity findByCustomerDetails(String customerId);
-//
 
     @Query(value = "select product_id from rating_review where product_id = ?1 and customer_id = ?2", nativeQuery = true)
     Optional<String> findProductExist(String productId, String customerId);

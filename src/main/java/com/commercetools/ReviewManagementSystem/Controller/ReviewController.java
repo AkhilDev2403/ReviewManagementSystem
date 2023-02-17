@@ -1,8 +1,6 @@
 package com.commercetools.ReviewManagementSystem.Controller;
 
-import com.commercetools.ReviewManagementSystem.Config.RestClient;
 import com.commercetools.ReviewManagementSystem.Dto.CreateReviewDto;
-import com.commercetools.ReviewManagementSystem.Dto.TestReviewRequest;
 import com.commercetools.ReviewManagementSystem.Dto.UpdateDto;
 import com.commercetools.ReviewManagementSystem.Entity.ReviewEntity;
 import com.commercetools.ReviewManagementSystem.Service.ReviewService;
@@ -14,7 +12,6 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 
