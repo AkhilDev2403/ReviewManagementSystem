@@ -10,6 +10,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
+
 import java.util.Optional;
 
 @Service
@@ -27,7 +28,7 @@ public class ReviewService {
         log.info("commercetools customer ID = " + commercetoolsCustomerId);
         Optional<String> checkProductExist = repository.findProductExist(dto.getProductId(), dto.getCustomerId());
         String customerId = dto.getCustomerId();
-        if (commercetoolsCustomerId.matches(customerId)) {
+        if (commercetoolsCustomerId.equals(customerId)) {
             if (checkProductExist.isEmpty()) {
                 float rating = dto.getRating();
                 if (rating <= 10) {
@@ -58,7 +59,7 @@ public class ReviewService {
 
     public String deleteReview(String cuId, String pId, String token) {
         String commercetoolsCustomerId = commercetoolsService.getCommercetoolsCustomer(token);
-        if (commercetoolsCustomerId.matches(cuId)) {
+        if (commercetoolsCustomerId.equals(cuId)) {
             String returnValue = "Initial";
             try {
                 Integer del = repository.deleteByProductId(cuId, pId);
@@ -89,7 +90,7 @@ public class ReviewService {
         Optional<ReviewEntity> entityList = repository.findByCustomerIdAndProductId(updateDto.getCustomerId(), updateDto.getProductId());
         String commercetoolsCustomerId = commercetoolsService.getCommercetoolsCustomer(token);
         String customerId = updateDto.getCustomerId();
-        if (commercetoolsCustomerId.matches(customerId)) {
+        if (commercetoolsCustomerId.equals(customerId)) {
             if (entityList.isEmpty()) {
                 return "Error... Invalid ProductId.. Please try again..";
             }
