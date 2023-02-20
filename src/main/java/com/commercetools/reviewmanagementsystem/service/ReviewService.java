@@ -9,13 +9,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
-import org.springframework.http.HttpEntity;
-import org.springframework.http.HttpHeaders;
-import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
-import org.springframework.web.client.RestTemplate;
-
-import java.util.*;
+import java.util.Optional;
 
 @Service
 @Slf4j
@@ -24,9 +19,11 @@ public class ReviewService {
     @Autowired
     ReviewRepository repository;
 
+    @Autowired
+    CommercetoolsService commercetoolsService;
 
     public String createReview(CreateReviewDto dto, String token) {
-        String commercetoolsCustomerId = getCommercetoolsCustomer(token);
+        String commercetoolsCustomerId = commercetoolsService.getCommercetoolsCustomer(token);
         log.info("commercetools customer ID = " + commercetoolsCustomerId);
         Optional<String> checkProductExist = repository.findProductExist(dto.getProductId(), dto.getCustomerId());
         String customerId = dto.getCustomerId();
@@ -53,23 +50,6 @@ public class ReviewService {
     }
 
 
-    String getCommercetoolsCustomer(String token) {
-        HttpHeaders headers = new HttpHeaders();
-        headers.add("authorization", token);
-        String query = "{\"operationName\":\"queryMyCustomer\",\"variables\":{},\"query\":\"query queryMyCustomer {\\n  me {\\n    customer {\\n      customerId: id\\n      custom {\\n        customFieldsRaw {\\n          name\\n          value\\n          __typename\\n        }\\n        __typename\\n      }\\n      version\\n      email\\n      firstName\\n      lastName\\n      version\\n      customerNumber\\n      customerGroupRef {\\n        customerGroupId: id\\n        __typename\\n      }\\n      __typename\\n    }\\n    __typename\\n  }\\n}\"}";
-        RestTemplate restTemplate = new RestTemplate();
-        String baseUrl = "https://api.europe-west1.gcp.commercetools.com/sunrise-spa/graphql";
-        ResponseEntity<LinkedHashMap> response = restTemplate.postForEntity(baseUrl, new HttpEntity<>(query, headers), LinkedHashMap.class);
-        LinkedHashMap result = response.getBody();
-        result = (LinkedHashMap) result.get("data");
-        result = (LinkedHashMap) result.get("me");
-        result = (LinkedHashMap) result.get("customer");
-        String cId = (String) result.get("customerId");
-        log.info(cId);
-        log.info((String) result.get("firstName"));
-        return cId;
-    }
-
     public Page<ReviewEntity> getAllReview(Integer pageNumber, Integer pageSize) {
         Pageable pageable = PageRequest.of(pageNumber, pageSize);
         return repository.findAll(pageable);
@@ -77,7 +57,7 @@ public class ReviewService {
 
 
     public String deleteReview(String cuId, String pId, String token) {
-        String commercetoolsCustomerId = getCommercetoolsCustomer(token);
+        String commercetoolsCustomerId = commercetoolsService.getCommercetoolsCustomer(token);
         if (commercetoolsCustomerId.matches(cuId)) {
             String returnValue = "Initial";
             try {
@@ -107,7 +87,7 @@ public class ReviewService {
 
     public String updateReview(UpdateDto updateDto, String token) {
         Optional<ReviewEntity> entityList = repository.findByCustomerIdAndProductId(updateDto.getCustomerId(), updateDto.getProductId());
-        String commercetoolsCustomerId = getCommercetoolsCustomer(token);
+        String commercetoolsCustomerId = commercetoolsService.getCommercetoolsCustomer(token);
         String customerId = updateDto.getCustomerId();
         if (commercetoolsCustomerId.matches(customerId)) {
             if (entityList.isEmpty()) {
