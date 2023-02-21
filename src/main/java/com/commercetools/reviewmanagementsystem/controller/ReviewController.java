@@ -1,5 +1,6 @@
 package com.commercetools.reviewmanagementsystem.controller;
 
+import com.commercetools.reviewmanagementsystem.constants.AbstractResponse;
 import com.commercetools.reviewmanagementsystem.constants.ResponseMessage;
 import com.commercetools.reviewmanagementsystem.dto.CreateReviewDto;
 import com.commercetools.reviewmanagementsystem.dto.UpdateDto;
@@ -29,7 +30,6 @@ public class ReviewController {
     ReviewService reviewService;
 
 
-    //http://localhost:8714/reviews/getAll
     @GetMapping("/getAllReviews/{pageNumber}/{pageSize}")
     public Page<ReviewEntity> getAllReviews(@PathVariable Integer pageNumber,
                                             @PathVariable Integer pageSize) {
@@ -55,55 +55,16 @@ public class ReviewController {
 
 
     @PostMapping("/add")
-    public ResponseEntity<Map<String, Object>> addReview(@RequestBody CreateReviewDto dto,
-                                                         @RequestHeader("secret-key") String secret,
-                                                         @RequestHeader("Authorization") String authorization) {
-        if (Objects.equals(secret, secretAuthKey)) {
-            String response = reviewService.createReview(dto, authorization);
-            HashMap<String, Object> returnValue = new HashMap<>();
-            returnValue.put(ResponseMessage.STATUS, response);
-
-            if (Objects.equals(response, ResponseMessage.INVALID_CUSTOMER)) {
-                return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(returnValue);
-            }
-            if (Objects.equals(response, ResponseMessage.ALREADY_REVIEWED)) {
-                return ResponseEntity.status(HttpStatus.NOT_ACCEPTABLE).body(returnValue);
-            }
-            if (Objects.equals(response, ResponseMessage.INVALID_RATING)) {
-                return ResponseEntity.status(HttpStatus.REQUESTED_RANGE_NOT_SATISFIABLE).body(returnValue);
-            }
-            return ResponseEntity.status(HttpStatus.CREATED).body(returnValue);
-        }
-
-        HashMap<String, Object> returnValue = new HashMap<>();
-        returnValue.put(ResponseMessage.STATUS, ResponseMessage.UNAUTHORIZED_ACCESS);
-        return ResponseEntity.status(HttpStatus.FORBIDDEN).body(returnValue);
+    public ResponseEntity<Object> addReview(@RequestBody CreateReviewDto dto,
+                                                     @RequestHeader("Authorization") String authorization) {
+        return new ResponseEntity<>(reviewService.createReview(dto, authorization), HttpStatus.CREATED);
     }
 
 
     @PutMapping("/update")
-    public ResponseEntity<Map<String, Object>> editReview(@RequestBody UpdateDto updateDto,
-                                                          @RequestHeader("secret-key") String secret,
-                                                          @RequestHeader("Authorization") String authorization) {
-        if (Objects.equals(secret, secretAuthKey)) {
-            String response = reviewService.updateReview(updateDto, authorization);
-            HashMap<String, Object> returnValue = new HashMap<>();
-            returnValue.put(ResponseMessage.STATUS, response);
-
-            if (Objects.equals(response, ResponseMessage.INVALID_CUSTOMER)) {
-                return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(returnValue);
-            }
-            if (Objects.equals(response, ResponseMessage.INVALID_PRODUCT)) {
-                return ResponseEntity.status(HttpStatus.NOT_ACCEPTABLE).body(returnValue);
-            }
-            if (Objects.equals(response, ResponseMessage.INVALID_RATING)) {
-                return ResponseEntity.status(HttpStatus.REQUESTED_RANGE_NOT_SATISFIABLE).body(returnValue);
-            }
-            return ResponseEntity.status(HttpStatus.OK).body(returnValue);
-        }
-        HashMap<String, Object> returnValue = new HashMap<>();
-        returnValue.put(ResponseMessage.STATUS, ResponseMessage.UNAUTHORIZED_ACCESS);
-        return ResponseEntity.status(HttpStatus.FORBIDDEN).body(returnValue);
+    public AbstractResponse<String> editReview(@RequestBody UpdateDto updateDto,
+                                                       @RequestHeader("Authorization") String authorization) {
+        return reviewService.updateReview(updateDto, authorization);
     }
 
     /**
@@ -116,23 +77,17 @@ public class ReviewController {
     @DeleteMapping("/delete/{customerId}/{pId}")
     public ResponseEntity<Map<String, Object>> deleteReview(@PathVariable(value = "customerId") String customerId,
                                                             @PathVariable(value = "pId") String prId,
-                                                            @RequestHeader("secret-key") String secret,
                                                             @RequestHeader("Authorization") String authorization) {
-        if (Objects.equals(secret, secretAuthKey)) {
-            String deleteResponse = reviewService.deleteReview(customerId, prId, authorization);
-            HashMap<String, Object> returnValue = new HashMap<>();
-            returnValue.put(ResponseMessage.STATUS, deleteResponse);
-            if (Objects.equals(deleteResponse, ResponseMessage.INVALID_CUSTOMER)) {
-                return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(returnValue);
-            }
-            if (Objects.equals(deleteResponse, ResponseMessage.NO_SUCH_PRODUCT)) {
-                return ResponseEntity.status(HttpStatus.NOT_ACCEPTABLE).body(returnValue);
-            }
-            return ResponseEntity.status(HttpStatus.OK).body(returnValue);
-        }
+        String deleteResponse = reviewService.deleteReview(customerId, prId, authorization);
         HashMap<String, Object> returnValue = new HashMap<>();
-        returnValue.put(ResponseMessage.STATUS, ResponseMessage.UNAUTHORIZED_ACCESS);
-        return ResponseEntity.status(HttpStatus.FORBIDDEN).body(returnValue);
+        returnValue.put(ResponseMessage.STATUS, deleteResponse);
+        if (Objects.equals(deleteResponse, ResponseMessage.INVALID_CUSTOMER)) {
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(returnValue);
+        }
+        if (Objects.equals(deleteResponse, ResponseMessage.NO_SUCH_PRODUCT)) {
+            return ResponseEntity.status(HttpStatus.NOT_ACCEPTABLE).body(returnValue);
+        }
+        return ResponseEntity.status(HttpStatus.OK).body(returnValue);
     }
 
 
