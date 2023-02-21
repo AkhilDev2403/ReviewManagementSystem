@@ -1,5 +1,6 @@
 package com.commercetools.reviewmanagementsystem.controller;
 
+import com.commercetools.reviewmanagementsystem.constants.AbstractResponse;
 import com.commercetools.reviewmanagementsystem.constants.ResponseMessage;
 import com.commercetools.reviewmanagementsystem.dto.CreateReviewDto;
 import com.commercetools.reviewmanagementsystem.dto.UpdateDto;
@@ -54,42 +55,16 @@ public class ReviewController {
 
 
     @PostMapping("/add")
-    public ResponseEntity<Map<String, Object>> addReview(@RequestBody CreateReviewDto dto,
-                                                         @RequestHeader("Authorization") String authorization) {
-        String response = reviewService.createReview(dto, authorization);
-        HashMap<String, Object> returnValue = new HashMap<>();
-        returnValue.put(ResponseMessage.STATUS, response);
-
-        if (Objects.equals(response, ResponseMessage.INVALID_CUSTOMER)) {
-            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(returnValue);
-        }
-        if (Objects.equals(response, ResponseMessage.ALREADY_REVIEWED)) {
-            return ResponseEntity.status(HttpStatus.NOT_ACCEPTABLE).body(returnValue);
-        }
-        if (Objects.equals(response, ResponseMessage.INVALID_RATING)) {
-            return ResponseEntity.status(HttpStatus.REQUESTED_RANGE_NOT_SATISFIABLE).body(returnValue);
-        }
-        return ResponseEntity.status(HttpStatus.CREATED).body(returnValue);
+    public ResponseEntity<Object> addReview(@RequestBody CreateReviewDto dto,
+                                                     @RequestHeader("Authorization") String authorization) {
+        return new ResponseEntity<>(reviewService.createReview(dto, authorization), HttpStatus.CREATED);
     }
 
 
     @PutMapping("/update")
-    public ResponseEntity<Map<String, Object>> editReview(@RequestBody UpdateDto updateDto,
-                                                          @RequestHeader("Authorization") String authorization) {
-        String response = reviewService.updateReview(updateDto, authorization);
-        HashMap<String, Object> returnValue = new HashMap<>();
-        returnValue.put(ResponseMessage.STATUS, response);
-
-        if (Objects.equals(response, ResponseMessage.INVALID_CUSTOMER)) {
-            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(returnValue);
-        }
-        if (Objects.equals(response, ResponseMessage.INVALID_PRODUCT)) {
-            return ResponseEntity.status(HttpStatus.NOT_ACCEPTABLE).body(returnValue);
-        }
-        if (Objects.equals(response, ResponseMessage.INVALID_RATING)) {
-            return ResponseEntity.status(HttpStatus.REQUESTED_RANGE_NOT_SATISFIABLE).body(returnValue);
-        }
-        return ResponseEntity.status(HttpStatus.OK).body(returnValue);
+    public AbstractResponse<String> editReview(@RequestBody UpdateDto updateDto,
+                                                       @RequestHeader("Authorization") String authorization) {
+        return reviewService.updateReview(updateDto, authorization);
     }
 
     /**

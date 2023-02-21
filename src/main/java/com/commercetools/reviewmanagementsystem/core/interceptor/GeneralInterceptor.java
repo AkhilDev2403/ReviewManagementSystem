@@ -1,4 +1,4 @@
-package com.commercetools.reviewmanagementsystem.interceptor;
+package com.commercetools.reviewmanagementsystem.core.interceptor;
 
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;

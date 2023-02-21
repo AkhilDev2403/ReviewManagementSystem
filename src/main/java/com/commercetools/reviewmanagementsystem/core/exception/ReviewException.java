@@ -1,0 +1,14 @@
+package com.commercetools.reviewmanagementsystem.core.exception;
+
+import lombok.AllArgsConstructor;
+import lombok.Data;
+import org.springframework.http.HttpStatus;
+
+@Data
+@AllArgsConstructor
+public class ReviewException {
+
+    private final String message;
+
+    private final HttpStatus status;
+}

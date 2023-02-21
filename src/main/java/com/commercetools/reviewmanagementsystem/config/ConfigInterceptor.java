@@ -1,6 +1,6 @@
 package com.commercetools.reviewmanagementsystem.config;
 
-import com.commercetools.reviewmanagementsystem.interceptor.GeneralInterceptor;
+import com.commercetools.reviewmanagementsystem.core.interceptor.GeneralInterceptor;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
 import org.springframework.web.servlet.config.annotation.InterceptorRegistry;
