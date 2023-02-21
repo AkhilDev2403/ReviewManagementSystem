@@ -1,5 +1,6 @@
 package com.commercetools.reviewmanagementsystem.constants;
 
+import com.commercetools.reviewmanagementsystem.dto.CreateReviewDto;
 import com.commercetools.reviewmanagementsystem.dto.UpdateDto;
 import com.fasterxml.jackson.annotation.JsonFormat;
 import lombok.AllArgsConstructor;
@@ -15,5 +16,8 @@ public class AbstractResponse<T> extends ArrayList<T> {
     protected String message = "";
 
     public AbstractResponse(UpdateDto updateDto, String token) {
+    }
+
+    public AbstractResponse(CreateReviewDto dto, String token) {
     }
 }

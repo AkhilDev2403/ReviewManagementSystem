@@ -1,9 +1,12 @@
 package com.commercetools.reviewmanagementsystem.core.interceptor;
 
+import com.commercetools.reviewmanagementsystem.core.exception.CustomException;
+import com.commercetools.reviewmanagementsystem.core.exception.ErrorMessages;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 import org.springframework.web.servlet.HandlerInterceptor;
+
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
@@ -20,7 +23,7 @@ public class GeneralInterceptor implements HandlerInterceptor {
         if (request.getHeader("Secret-Key") == null) {
             log.info("No secret-key.");
             response.addHeader("secretKey", "No key available");
-            return false;
+            throw new CustomException(ErrorMessages.INVALID_SECRET.getErrorMessages());
         } else if (request.getHeader("Secret-Key").equals(secretAuthKey)) {
             response.addHeader("Interceptor", "Key - Success");
             log.info("Validation Success.");
@@ -28,7 +31,7 @@ public class GeneralInterceptor implements HandlerInterceptor {
         } else {
             log.info("Validation Error. Invalid Key");
             response.addHeader("Interceptor", "Invalid Key");
-            return false;
+            throw new CustomException(ErrorMessages.INVALID_SECRET.getErrorMessages());
         }
     }
 }
