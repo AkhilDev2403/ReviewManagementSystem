@@ -55,15 +55,15 @@ public class ReviewController {
 
 
     @PostMapping("/add")
-    public ResponseEntity<Object> addReview(@RequestBody CreateReviewDto dto,
-                                                     @RequestHeader("Authorization") String authorization) {
-        return new ResponseEntity<>(reviewService.createReview(dto, authorization), HttpStatus.CREATED);
+    public AbstractResponse<String> addReview(@RequestBody CreateReviewDto dto,
+                                              @RequestHeader("Authorization") String authorization) {
+        return reviewService.createReview(dto, authorization);
     }
 
 
     @PutMapping("/update")
     public AbstractResponse<String> editReview(@RequestBody UpdateDto updateDto,
-                                                       @RequestHeader("Authorization") String authorization) {
+                                               @RequestHeader("Authorization") String authorization) {
         return reviewService.updateReview(updateDto, authorization);
     }
 
