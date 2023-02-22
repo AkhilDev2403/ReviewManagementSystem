@@ -8,13 +8,15 @@ import com.commercetools.reviewmanagementsystem.dto.UpdateDto;
 import com.commercetools.reviewmanagementsystem.entity.ReviewEntity;
 import com.commercetools.reviewmanagementsystem.repository.ReviewRepository;
 import lombok.extern.slf4j.Slf4j;
+import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
-import java.lang.constant.Constable;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Optional;
 
 @Service
@@ -27,6 +29,17 @@ public class ReviewService {
     @Autowired
     CommercetoolsService commercetoolsService;
 
+    public List<CreateReviewDto> getAllReview(Integer page, Integer size) {
+        List<CreateReviewDto> returnValue = new ArrayList<>();
+        Pageable pageable = PageRequest.of(page, size);
+        Page<ReviewEntity> reviewList = repository.findAll(pageable);
+        List<ReviewEntity> entityList = reviewList.getContent();
+        for (ReviewEntity reviewEntity : entityList) {
+            CreateReviewDto reviewDto = new ModelMapper().map(reviewEntity, CreateReviewDto.class);
+            returnValue.add(reviewDto);
+        }
+        return returnValue;
+    }
 
     public AbstractResponse<String> createReview(CreateReviewDto dto, String token) {
         AbstractResponse<String> createResponse = new AbstractResponse<>(dto, token);
@@ -56,30 +69,25 @@ public class ReviewService {
     }
 
 
-    public Page<ReviewEntity> getAllReview(Integer pageNumber, Integer pageSize) {
-        Pageable pageable = PageRequest.of(pageNumber, pageSize);
-        return repository.findAll(pageable);
-    }
-
-
-    public String deleteReview(String cuId, String pId, String token) {
+    public AbstractResponse<String> deleteReview(String cuId, String pId, String token) {
+        AbstractResponse<String> deleteResponse = new AbstractResponse<>(cuId, pId, token);
         String commercetoolsCustomerId = commercetoolsService.getCommercetoolsCustomer(token);
-        if (commercetoolsCustomerId.equals(cuId)) {
-            String returnValue = "Initial";
-            try {
-                Integer del = repository.deleteByProductId(cuId, pId);
-                log.info("" + del);
-                if (del != 0) {
-                    returnValue = "Delete Success";
-                } else {
-                    returnValue = "Failed...! No such product Exists.. Please try again.";
-                }
-            } catch (Exception e) {
-                log.error(e + "error");
+        if (!commercetoolsCustomerId.equals(cuId))
+            throw new CustomException(ErrorMessages.INVALID_CUSTOMER.getErrorMessages());
+        try {
+            Integer del = repository.deleteByProductId(cuId, pId);
+            log.info("" + del);
+            if (del != 0) {
+                deleteResponse.setSuccess(true);
+                deleteResponse.setMessage("Deleted successfully");
+            } else {
+                deleteResponse.setSuccess(false);
+                deleteResponse.setMessage("Failed...! No such product Exists.. Please try again.");
             }
-            return returnValue;
+        } catch (Exception e) {
+            throw new CustomException(ErrorMessages.FAILED.getErrorMessages());
         }
-        return "Error... Invalid customer.... Please Log in";
+        return deleteResponse;
     }
 
     public float getAvgRating(String productId) {

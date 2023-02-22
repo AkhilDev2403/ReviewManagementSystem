@@ -14,10 +14,17 @@ import java.util.ArrayList;
 public class AbstractResponse<T> extends ArrayList<T> {
     protected boolean success = true;
     protected String message = "";
+    protected int offset = 0;
+    protected long size = 0l;
+
 
     public AbstractResponse(UpdateDto updateDto, String token) {
     }
 
     public AbstractResponse(CreateReviewDto dto, String token) {
     }
+
+    public AbstractResponse(String cuId, String pId, String token) {
+    }
+
 }
