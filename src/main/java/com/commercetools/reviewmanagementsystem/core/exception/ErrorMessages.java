@@ -9,6 +9,8 @@ public enum ErrorMessages {
     INVALID_PRODUCT("THERE'S NO SUCH PRODUCT"),
     UNAUTHORIZED_CUSTOMER("UNAUTHORIZED CUSTOMER"),
     INVALID_SECRET("INVALID SECRET"),
+    FAILED("OPERATION FAILED"),
+    NO_REVIEWS("No Reviews to display"),
     WISH_PID_FOUND("PROVIDE PRODUCT ID");
 
     ErrorMessages(String errorMessages) {

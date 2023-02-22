@@ -14,7 +14,7 @@ import javax.servlet.http.HttpServletResponse;
 @Component
 public class GeneralInterceptor implements HandlerInterceptor {
 
-    @Value("${secret_auth_key}")
+    @Value("${Secret_Auth_Key}")
     private String secretAuthKey;
 
     @Override
