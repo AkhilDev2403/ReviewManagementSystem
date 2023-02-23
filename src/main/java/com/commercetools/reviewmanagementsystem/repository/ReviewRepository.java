@@ -33,4 +33,5 @@ public interface ReviewRepository extends JpaRepository<ReviewEntity, Long> {
 
     @Query(value = "select * from rating_review r where r.product_id = ?1 and r.customer_id = ?2", nativeQuery = true)
     Optional<ReviewEntity> findByProductAndUser(String productId, String customerId);
+
 }
