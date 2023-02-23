@@ -4,18 +4,15 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
-import java.time.LocalDateTime;
-
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
 public class ReviewDto {
-
-    private String comment;
-    private LocalDateTime dateTime;
-    private float rating;
     private String customerId;
+    private String firstName;
+    private String lastName;
     private String productId;
+    private float rating;
+    private String review;
     private float avgRating;
-
 }

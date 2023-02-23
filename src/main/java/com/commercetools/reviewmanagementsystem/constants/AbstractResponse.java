@@ -1,30 +1,28 @@
 package com.commercetools.reviewmanagementsystem.constants;
 
-import com.commercetools.reviewmanagementsystem.dto.CreateReviewDto;
-import com.commercetools.reviewmanagementsystem.dto.UpdateDto;
+import com.commercetools.reviewmanagementsystem.model.request.CreateReviewRequest;
+import com.commercetools.reviewmanagementsystem.model.request.UpdateReviewRequest;
 import com.fasterxml.jackson.annotation.JsonFormat;
 import lombok.AllArgsConstructor;
 import lombok.Data;
+import lombok.NoArgsConstructor;
 
 import java.util.ArrayList;
 
 @Data
 @AllArgsConstructor
+@NoArgsConstructor
 @JsonFormat(shape = JsonFormat.Shape.OBJECT)
 public class AbstractResponse<T> extends ArrayList<T> {
     protected boolean success = true;
     protected String message = "";
-    protected int offset = 0;
-    protected long size = 0l;
-
-
-    public AbstractResponse(UpdateDto updateDto, String token) {
-    }
-
-    public AbstractResponse(CreateReviewDto dto, String token) {
-    }
 
     public AbstractResponse(String cuId, String pId, String token) {
     }
 
+    public AbstractResponse(CreateReviewRequest reviewRequest, String authorization) {
+    }
+
+    public AbstractResponse(UpdateReviewRequest updateRequest, String token) {
+    }
 }

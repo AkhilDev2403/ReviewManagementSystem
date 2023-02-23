@@ -3,9 +3,13 @@ package com.commercetools.reviewmanagementsystem.service;
 import com.commercetools.reviewmanagementsystem.constants.AbstractResponse;
 import com.commercetools.reviewmanagementsystem.core.exception.CustomException;
 import com.commercetools.reviewmanagementsystem.core.exception.ErrorMessages;
-import com.commercetools.reviewmanagementsystem.dto.CreateReviewDto;
-import com.commercetools.reviewmanagementsystem.dto.UpdateDto;
+import com.commercetools.reviewmanagementsystem.core.exception.UserNotFoundException;
+import com.commercetools.reviewmanagementsystem.dto.ReviewDto;
 import com.commercetools.reviewmanagementsystem.entity.ReviewEntity;
+import com.commercetools.reviewmanagementsystem.model.request.CreateReviewRequest;
+import com.commercetools.reviewmanagementsystem.model.request.UpdateReviewRequest;
+import com.commercetools.reviewmanagementsystem.model.response.CreateReviewResponse;
+import com.commercetools.reviewmanagementsystem.model.response.UpdateReviewResponse;
 import com.commercetools.reviewmanagementsystem.repository.ReviewRepository;
 import lombok.extern.slf4j.Slf4j;
 import org.modelmapper.ModelMapper;
@@ -29,39 +33,24 @@ public class ReviewService {
     @Autowired
     CommercetoolsService commercetoolsService;
 
-    public List<CreateReviewDto> getAllReview(Integer page, Integer size) {
-        List<CreateReviewDto> returnValue = new ArrayList<>();
-        Pageable pageable = PageRequest.of(page, size);
-        Page<ReviewEntity> reviewList = repository.findAll(pageable);
-        List<ReviewEntity> entityList = reviewList.getContent();
-        for (ReviewEntity reviewEntity : entityList) {
-            CreateReviewDto reviewDto = new ModelMapper().map(reviewEntity, CreateReviewDto.class);
-            returnValue.add(reviewDto);
-        }
-        return returnValue;
-    }
 
-    public AbstractResponse<String> createReview(CreateReviewDto dto, String token) {
-        AbstractResponse<String> createResponse = new AbstractResponse<>(dto, token);
-        String commercetoolsCustomerId = commercetoolsService.getCommercetoolsCustomer(token);
+    public AbstractResponse<CreateReviewResponse> createReview(CreateReviewRequest reviewRequest, String authorization) {
+        AbstractResponse<CreateReviewResponse> createResponse = new AbstractResponse<>(reviewRequest, authorization);
+        String commercetoolsCustomerId = commercetoolsService.getCommercetoolsCustomer(authorization);
         log.info("commercetools customer ID = " + commercetoolsCustomerId);
-        Optional<ReviewEntity> isAlreadyReviewed = repository.findByProductAndUser(dto.getProductId(), dto.getCustomerId());
-        String customerId = dto.getCustomerId();
+        Optional<ReviewEntity> isAlreadyReviewed = repository.findByProductAndUser(reviewRequest.getProductId(), reviewRequest.getCustomerId());
+        String customerId = reviewRequest.getCustomerId();
 
         if (!commercetoolsCustomerId.equals(customerId))
-            throw new CustomException(ErrorMessages.INVALID_CUSTOMER.getErrorMessages());
+            throw new UserNotFoundException(ErrorMessages.INVALID_CUSTOMER.getErrorMessages());
 
         if (isAlreadyReviewed.isPresent())
             throw new CustomException(ErrorMessages.ALREADY_REVIEWED.getErrorMessages());
 
-        if (dto.getRating() > 10)
+        if (reviewRequest.getRating() > 5)
             throw new CustomException(ErrorMessages.INVALID_RATING.getErrorMessages());
 
-        ReviewEntity reviewEntity = new ReviewEntity();
-        reviewEntity.setCustomerId(dto.getCustomerId());
-        reviewEntity.setProductId(dto.getProductId());
-        reviewEntity.setRating(dto.getRating());
-        reviewEntity.setComment(dto.getComment());
+        ReviewEntity reviewEntity = new ModelMapper().map(reviewRequest, ReviewEntity.class);
         repository.save(reviewEntity);
         createResponse.setMessage("Review Added Successfully");
         createResponse.setSuccess(true);
@@ -69,11 +58,35 @@ public class ReviewService {
     }
 
 
+    public AbstractResponse<UpdateReviewResponse> updateReview(UpdateReviewRequest updateRequest, String token) {
+        AbstractResponse<UpdateReviewResponse> uploadResponse = new AbstractResponse<>(updateRequest, token);
+        Optional<ReviewEntity> productExist = repository.findByCustomerIdAndProductId(updateRequest.getCustomerId(), updateRequest.getProductId());
+        String commercetoolsCustomerId = commercetoolsService.getCommercetoolsCustomer(token);
+        String customerId = updateRequest.getCustomerId();
+        if (!commercetoolsCustomerId.equals(customerId))
+            throw new UserNotFoundException(ErrorMessages.INVALID_CUSTOMER.getErrorMessages());
+
+        if (productExist.isEmpty())
+            throw new CustomException(ErrorMessages.INVALID_PRODUCT.getErrorMessages());
+
+        if (updateRequest.getRating() > 5)
+            throw new CustomException(ErrorMessages.INVALID_RATING.getErrorMessages());
+
+        ReviewEntity entity = repository.findByCustomerDetails(updateRequest.getCustomerId(), updateRequest.getProductId());
+        log.info(String.valueOf(entity));
+        entity.setRating(updateRequest.getRating());
+        entity.setReview(updateRequest.getReview());
+        repository.save(entity);
+        uploadResponse.setSuccess(true);
+        uploadResponse.setMessage("Review Updated....");
+        return uploadResponse;
+    }
+
     public AbstractResponse<String> deleteReview(String cuId, String pId, String token) {
         AbstractResponse<String> deleteResponse = new AbstractResponse<>(cuId, pId, token);
         String commercetoolsCustomerId = commercetoolsService.getCommercetoolsCustomer(token);
         if (!commercetoolsCustomerId.equals(cuId))
-            throw new CustomException(ErrorMessages.INVALID_CUSTOMER.getErrorMessages());
+            throw new UserNotFoundException(ErrorMessages.INVALID_CUSTOMER.getErrorMessages());
         try {
             Integer del = repository.deleteByProductId(cuId, pId);
             log.info("" + del);
@@ -98,33 +111,16 @@ public class ReviewService {
         return finalAvgRating;
     }
 
-
-    public AbstractResponse<String> updateReview(UpdateDto updateDto, String token) {
-        AbstractResponse<String> uploadResponse = new AbstractResponse<>(updateDto, token);
-        Optional<ReviewEntity> productExist = repository.findByCustomerIdAndProductId(updateDto.getCustomerId(), updateDto.getProductId());
-        String commercetoolsCustomerId = commercetoolsService.getCommercetoolsCustomer(token);
-        String customerId = updateDto.getCustomerId();
-        if (!commercetoolsCustomerId.equals(customerId))
-            throw new CustomException(ErrorMessages.INVALID_CUSTOMER.getErrorMessages());
-
-        if (productExist.isEmpty())
-            throw new CustomException(ErrorMessages.INVALID_PRODUCT.getErrorMessages());
-
-        if (updateDto.getRating() > 10)
-            throw new CustomException(ErrorMessages.INVALID_RATING.getErrorMessages());
-
-        ReviewEntity entity = repository.findByCustomerDetails(updateDto.getCustomerId(), updateDto.getProductId());
-        log.info(String.valueOf(entity));
-        entity.setRating(updateDto.getRating());
-        entity.setComment(updateDto.getComment());
-        repository.save(entity);
-        uploadResponse.setSuccess(true);
-        uploadResponse.setMessage("Review Updated....");
-        return uploadResponse;
-
+    public List<ReviewDto> getAllReview(Integer page, Integer size) {
+        List<ReviewDto> returnValue = new ArrayList<>();
+        Pageable pageable = PageRequest.of(page, size);
+        Page<ReviewEntity> reviewList = repository.findAll(pageable);
+        List<ReviewEntity> entityList = reviewList.getContent();
+        for (ReviewEntity reviewEntity : entityList) {
+            ReviewDto reviewDto = new ModelMapper().map(reviewEntity, ReviewDto.class);
+            returnValue.add(reviewDto);
+        }
+        return returnValue;
     }
 
-
 }
-
-

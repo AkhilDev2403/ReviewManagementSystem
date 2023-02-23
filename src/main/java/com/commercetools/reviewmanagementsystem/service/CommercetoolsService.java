@@ -10,7 +10,10 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
 
+import java.lang.reflect.Array;
+import java.util.ArrayList;
 import java.util.LinkedHashMap;
+import java.util.List;
 
 @Service
 @Slf4j
@@ -19,10 +22,10 @@ public class CommercetoolsService {
     @Value("${baseUrl}")
     public String url;
 
-    String getCommercetoolsCustomer(String token) {
+    String getCommercetoolsCustomer(String authorization) {
         try {
             HttpHeaders headers = new HttpHeaders();
-            headers.add("authorization", token);
+            headers.add("authorization", authorization);
             String query = "{\"operationName\":\"queryMyCustomer\",\"variables\":{},\"query\":\"query queryMyCustomer {\\n  me {\\n    customer {\\n      customerId: id\\n      custom {\\n        customFieldsRaw {\\n          name\\n          value\\n          __typename\\n        }\\n        __typename\\n      }\\n      version\\n      email\\n      firstName\\n      lastName\\n      version\\n      customerNumber\\n      customerGroupRef {\\n        customerGroupId: id\\n        __typename\\n      }\\n      __typename\\n    }\\n    __typename\\n  }\\n}\"}";
             RestTemplate restTemplate = new RestTemplate();
             String baseUrl = url;
@@ -39,5 +42,4 @@ public class CommercetoolsService {
             throw new CustomException(ErrorMessages.UNAUTHORIZED_CUSTOMER.getErrorMessages());
         }
     }
-
 }

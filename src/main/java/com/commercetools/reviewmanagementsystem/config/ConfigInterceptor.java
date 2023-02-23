@@ -9,7 +9,6 @@ import org.springframework.web.servlet.config.annotation.WebMvcConfigurationSupp
 @Component
 @RequiredArgsConstructor
 public class ConfigInterceptor extends WebMvcConfigurationSupport {
-
     private final GeneralInterceptor interceptor;
 
     @Override
