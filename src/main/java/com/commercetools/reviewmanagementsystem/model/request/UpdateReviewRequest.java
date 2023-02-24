@@ -8,9 +8,13 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 @AllArgsConstructor
 public class UpdateReviewRequest {
+
     private String review;
+
     private float rating;
+
     private String customerId;
+
     private String productId;
 
 }

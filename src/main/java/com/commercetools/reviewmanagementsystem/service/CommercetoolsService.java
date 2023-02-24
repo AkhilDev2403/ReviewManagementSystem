@@ -2,6 +2,7 @@ package com.commercetools.reviewmanagementsystem.service;
 
 import com.commercetools.reviewmanagementsystem.core.exception.CustomException;
 import com.commercetools.reviewmanagementsystem.core.exception.ErrorMessages;
+import com.commercetools.reviewmanagementsystem.core.exception.UserNotFoundException;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpEntity;
@@ -10,10 +11,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
 
-import java.lang.reflect.Array;
-import java.util.ArrayList;
 import java.util.LinkedHashMap;
-import java.util.List;
 
 @Service
 @Slf4j
@@ -39,7 +37,7 @@ public class CommercetoolsService {
             log.info((String) result.get("firstName"));
             return cId;
         } catch (Exception e) {
-            throw new CustomException(ErrorMessages.UNAUTHORIZED_CUSTOMER.getErrorMessages());
+            throw new UserNotFoundException(ErrorMessages.UNAUTHORIZED_CUSTOMER.getErrorMessages());
         }
     }
 }

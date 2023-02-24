@@ -4,12 +4,12 @@ import com.commercetools.reviewmanagementsystem.entity.ReviewEntity;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
-import org.springframework.transaction.annotation.Transactional;
 
-import java.util.List;
+import javax.transaction.Transactional;
 import java.util.Optional;
 
 public interface ReviewRepository extends JpaRepository<ReviewEntity, Long> {
+
     @Modifying
     @Transactional
     @Query(value = "delete from rating_review where customer_id = ?1 and  product_id = ?2", nativeQuery = true)
@@ -28,4 +28,6 @@ public interface ReviewRepository extends JpaRepository<ReviewEntity, Long> {
     @Query(value = "select * from rating_review r where r.product_id = ?1 and r.customer_id = ?2", nativeQuery = true)
     Optional<ReviewEntity> findByProductAndUser(String productId, String customerId);
 
+    @Query(value = "select * from rating_review r where r.product_id = ?1", nativeQuery = true)
+    Optional<ReviewEntity> findByProductId(String productId);
 }

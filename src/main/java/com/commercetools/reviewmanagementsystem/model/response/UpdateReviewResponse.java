@@ -8,6 +8,9 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 @NoArgsConstructor
 public class UpdateReviewResponse {
+
     private String comment;
+
     private float rating;
+
 }

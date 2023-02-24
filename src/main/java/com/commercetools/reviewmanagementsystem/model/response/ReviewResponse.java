@@ -8,8 +8,11 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 @NoArgsConstructor
 public class ReviewResponse {
+
     private String customerId;
+
     private String review;
+
     private String rating;
 
 }

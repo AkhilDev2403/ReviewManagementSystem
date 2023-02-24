@@ -1,6 +1,5 @@
 package com.commercetools.reviewmanagementsystem.service;
 
-import com.commercetools.reviewmanagementsystem.constants.AbstractResponse;
 import com.commercetools.reviewmanagementsystem.core.exception.CustomException;
 import com.commercetools.reviewmanagementsystem.core.exception.ErrorMessages;
 import com.commercetools.reviewmanagementsystem.core.exception.UserNotFoundException;
@@ -8,8 +7,6 @@ import com.commercetools.reviewmanagementsystem.dto.ReviewDto;
 import com.commercetools.reviewmanagementsystem.entity.ReviewEntity;
 import com.commercetools.reviewmanagementsystem.model.request.CreateReviewRequest;
 import com.commercetools.reviewmanagementsystem.model.request.UpdateReviewRequest;
-import com.commercetools.reviewmanagementsystem.model.response.CreateReviewResponse;
-import com.commercetools.reviewmanagementsystem.model.response.UpdateReviewResponse;
 import com.commercetools.reviewmanagementsystem.repository.ReviewRepository;
 import lombok.extern.slf4j.Slf4j;
 import org.modelmapper.ModelMapper;
@@ -35,7 +32,6 @@ public class ReviewService {
 
 
     public ReviewEntity createReview(CreateReviewRequest reviewRequest, String authorization) {
-        AbstractResponse<CreateReviewResponse> createResponse = new AbstractResponse<>(reviewRequest, authorization);
         String commercetoolsCustomerId = commercetoolsService.getCommercetoolsCustomer(authorization);
         log.info("commercetools customer ID = " + commercetoolsCustomerId);
         Optional<ReviewEntity> isAlreadyReviewed = repository.findByProductAndUser(reviewRequest.getProductId(), reviewRequest.getCustomerId());
@@ -55,8 +51,7 @@ public class ReviewService {
     }
 
 
-    public AbstractResponse<UpdateReviewResponse> updateReview(UpdateReviewRequest updateRequest, String token) {
-        AbstractResponse<UpdateReviewResponse> uploadResponse = new AbstractResponse<>(updateRequest, token);
+    public ReviewEntity updateReview(UpdateReviewRequest updateRequest, String token) {
         Optional<ReviewEntity> productExist = repository.findByCustomerIdAndProductId(updateRequest.getCustomerId(), updateRequest.getProductId());
         String commercetoolsCustomerId = commercetoolsService.getCommercetoolsCustomer(token);
         String customerId = updateRequest.getCustomerId();
@@ -73,31 +68,23 @@ public class ReviewService {
         log.info(String.valueOf(entity));
         entity.setRating(updateRequest.getRating());
         entity.setReview(updateRequest.getReview());
-        repository.save(entity);
-        uploadResponse.setSuccess(true);
-        uploadResponse.setMessage("Review Updated....");
-        return uploadResponse;
+        return repository.save(entity);
     }
 
-    public AbstractResponse<String> deleteReview(String cuId, String pId, String token) {
-        AbstractResponse<String> deleteResponse = new AbstractResponse<>(cuId, pId, token);
+    public Object deleteReview(String cuId, String pId, String token) {
         String commercetoolsCustomerId = commercetoolsService.getCommercetoolsCustomer(token);
         if (!commercetoolsCustomerId.equals(cuId))
             throw new UserNotFoundException(ErrorMessages.INVALID_CUSTOMER.getErrorMessages());
-        try {
-            Integer del = repository.deleteByProductId(cuId, pId);
-            log.info("" + del);
-            if (del != 0) {
-                deleteResponse.setSuccess(true);
-                deleteResponse.setMessage("Deleted successfully");
-            } else {
-                deleteResponse.setSuccess(false);
-                deleteResponse.setMessage("Failed...! No such product Exists.. Please try again.");
-            }
-        } catch (Exception e) {
-            throw new CustomException(ErrorMessages.FAILED.getErrorMessages());
+
+        Optional<ReviewEntity> productExist = repository.findByProductId(pId);
+        if (productExist.isEmpty()) {
+            throw new CustomException(ErrorMessages.INVALID_PRODUCT.getErrorMessages());
         }
-        return deleteResponse;
+
+        Integer status = repository.deleteByProductId(cuId, pId);
+        if (status == 0)
+            throw new CustomException(ErrorMessages.NO_REVIEW_FOUND.getErrorMessages());
+        return "Deleted";
     }
 
     public float getAvgRating(String productId) {
@@ -121,3 +108,4 @@ public class ReviewService {
     }
 
 }
+

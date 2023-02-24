@@ -1,14 +1,11 @@
 package com.commercetools.reviewmanagementsystem.controller;
 
-import com.commercetools.reviewmanagementsystem.constants.AbstractResponse;
 import com.commercetools.reviewmanagementsystem.core.model.ApiResponse;
 import com.commercetools.reviewmanagementsystem.core.model.Constants;
 import com.commercetools.reviewmanagementsystem.core.model.CustomHttpStatus;
 import com.commercetools.reviewmanagementsystem.dto.ReviewDto;
 import com.commercetools.reviewmanagementsystem.model.request.CreateReviewRequest;
 import com.commercetools.reviewmanagementsystem.model.request.UpdateReviewRequest;
-import com.commercetools.reviewmanagementsystem.model.response.CreateReviewResponse;
-import com.commercetools.reviewmanagementsystem.model.response.UpdateReviewResponse;
 import com.commercetools.reviewmanagementsystem.model.response.ReviewResponse;
 import com.commercetools.reviewmanagementsystem.service.ReviewService;
 import org.modelmapper.ModelMapper;
@@ -16,6 +13,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -41,16 +39,21 @@ public class ReviewController {
     }
 
     @PutMapping("/update")
-    public AbstractResponse<UpdateReviewResponse> editReview(@RequestBody UpdateReviewRequest updateRequest,
-                                                             @RequestHeader("Authorization") String authorization) {
-        return reviewService.updateReview(updateRequest, authorization);
+    public ResponseEntity<ApiResponse> editReview(@RequestBody UpdateReviewRequest updateRequest,
+                                                  @RequestHeader("Authorization") String authorization) {
+        Map data = new HashMap();
+        data.put(Constants.DATA, reviewService.updateReview(updateRequest, authorization));
+        return ResponseEntity.ok(new ApiResponse(data, Constants.SUCCESS, CustomHttpStatus.SUCCESS.ordinal()));
     }
 
     @DeleteMapping("/delete/{customerId}/{pId}")
-    public AbstractResponse<String> deleteReview(@PathVariable(value = "customerId") String customerId,
-                                                 @PathVariable(value = "pId") String prId,
-                                                 @RequestHeader("Authorization") String authorization) {
-        return reviewService.deleteReview(customerId, prId, authorization);
+    public ResponseEntity<ApiResponse> deleteReview(@PathVariable(value = "customerId") String customerId,
+                                                    @PathVariable(value = "pId") String prId,
+                                                    @RequestHeader("Authorization") String authorization) {
+
+        Map<String, Object> data = new HashMap<>();
+        data.put(Constants.DATA, reviewService.deleteReview(customerId, prId, authorization));
+        return ResponseEntity.ok(new ApiResponse(data, Constants.SUCCESS, CustomHttpStatus.SUCCESS.ordinal()));
     }
 
     @GetMapping("/getAllReviews")
