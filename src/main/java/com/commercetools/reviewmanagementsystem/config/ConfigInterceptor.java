@@ -10,7 +10,6 @@ import org.springframework.web.servlet.config.annotation.WebMvcConfigurationSupp
 @RequiredArgsConstructor
 public class ConfigInterceptor extends WebMvcConfigurationSupport {
     private final GeneralInterceptor interceptor;
-
     @Override
     protected void addInterceptors(InterceptorRegistry registry) {
         registry.addInterceptor(interceptor);

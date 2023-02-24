@@ -12,10 +12,8 @@ import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.web.bind.annotation.*;
-
 import java.util.ArrayList;
 import java.util.List;
-
 
 @RestController
 @CrossOrigin(origins = "*")
@@ -46,7 +44,6 @@ public class ReviewController {
                                                  @RequestHeader("Authorization") String authorization) {
         return reviewService.deleteReview(customerId, prId, authorization);
     }
-
 
     @GetMapping("/getAllReviews")
     public List<ReviewResponse> getAllReviews(@RequestParam(value = "page", defaultValue = "0") int page,
