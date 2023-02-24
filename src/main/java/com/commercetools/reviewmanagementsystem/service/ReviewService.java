@@ -34,7 +34,7 @@ public class ReviewService {
     CommercetoolsService commercetoolsService;
 
 
-    public AbstractResponse<CreateReviewResponse> createReview(CreateReviewRequest reviewRequest, String authorization) {
+    public ReviewEntity createReview(CreateReviewRequest reviewRequest, String authorization) {
         AbstractResponse<CreateReviewResponse> createResponse = new AbstractResponse<>(reviewRequest, authorization);
         String commercetoolsCustomerId = commercetoolsService.getCommercetoolsCustomer(authorization);
         log.info("commercetools customer ID = " + commercetoolsCustomerId);
@@ -51,10 +51,7 @@ public class ReviewService {
             throw new CustomException(ErrorMessages.INVALID_RATING.getErrorMessages());
 
         ReviewEntity reviewEntity = new ModelMapper().map(reviewRequest, ReviewEntity.class);
-        repository.save(reviewEntity);
-        createResponse.setMessage("Review Added Successfully");
-        createResponse.setSuccess(true);
-        return createResponse;
+        return repository.save(reviewEntity);
     }
 
 

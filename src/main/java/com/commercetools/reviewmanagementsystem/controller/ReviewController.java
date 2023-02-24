@@ -1,6 +1,9 @@
 package com.commercetools.reviewmanagementsystem.controller;
 
 import com.commercetools.reviewmanagementsystem.constants.AbstractResponse;
+import com.commercetools.reviewmanagementsystem.core.model.ApiResponse;
+import com.commercetools.reviewmanagementsystem.core.model.Constants;
+import com.commercetools.reviewmanagementsystem.core.model.CustomHttpStatus;
 import com.commercetools.reviewmanagementsystem.dto.ReviewDto;
 import com.commercetools.reviewmanagementsystem.model.request.CreateReviewRequest;
 import com.commercetools.reviewmanagementsystem.model.request.UpdateReviewRequest;
@@ -11,9 +14,12 @@ import com.commercetools.reviewmanagementsystem.service.ReviewService;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 @RestController
 @CrossOrigin(origins = "*")
@@ -27,9 +33,11 @@ public class ReviewController {
     ReviewService reviewService;
 
     @PostMapping("/add")
-    public AbstractResponse<CreateReviewResponse> addReview(@RequestBody CreateReviewRequest reviewRequest,
-                                                            @RequestHeader("Authorization") String authorization) {
-        return reviewService.createReview(reviewRequest, authorization);
+    public ResponseEntity<ApiResponse> addReview(@RequestBody CreateReviewRequest reviewRequest,
+                                                 @RequestHeader("Authorization") String authorization) {
+        Map data = new HashMap();
+        data.put(Constants.DATA, reviewService.createReview(reviewRequest, authorization));
+        return ResponseEntity.ok(new ApiResponse(data, Constants.SUCCESS, CustomHttpStatus.SUCCESS.ordinal()));
     }
 
     @PutMapping("/update")
