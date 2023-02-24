@@ -23,10 +23,10 @@ public interface ReviewRepository extends JpaRepository<ReviewEntity, Long> {
     Optional<ReviewEntity> findByCustomerIdAndProductId(String customerId, String productId);
 
     @Query(value = "select * from rating_review r where r.customer_id = ?1  and r.product_id = ?2", nativeQuery = true)
-    ReviewEntity findByCustomerDetails(String customerId, String productId);
+    ReviewEntity findByCustomerAndProductDetails(String customerId, String productId);
 
     @Query(value = "select * from rating_review r where r.product_id = ?1 and r.customer_id = ?2", nativeQuery = true)
-    Optional<ReviewEntity> findByProductAndUser(String productId, String customerId);
+    Optional<ReviewEntity> findByProductAndUserAlreadyExist(String productId, String customerId);
 
     @Query(value = "select * from rating_review r where r.product_id = ?1", nativeQuery = true)
     Optional<ReviewEntity> findByProductId(String productId);

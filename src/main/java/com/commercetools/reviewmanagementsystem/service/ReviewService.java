@@ -34,7 +34,7 @@ public class ReviewService {
     public ReviewEntity createReview(CreateReviewRequest reviewRequest, String authorization) {
         String commercetoolsCustomerId = commercetoolsService.getCommercetoolsCustomer(authorization);
         log.info("commercetools customer ID = " + commercetoolsCustomerId);
-        Optional<ReviewEntity> isAlreadyReviewed = repository.findByProductAndUser(reviewRequest.getProductId(), reviewRequest.getCustomerId());
+        Optional<ReviewEntity> isAlreadyReviewed = repository.findByProductAndUserAlreadyExist(reviewRequest.getProductId(), reviewRequest.getCustomerId());
         String customerId = reviewRequest.getCustomerId();
 
         if (!commercetoolsCustomerId.equals(customerId))
@@ -64,7 +64,7 @@ public class ReviewService {
         if (updateRequest.getRating() > 5)
             throw new CustomException(ErrorMessages.INVALID_RATING.getErrorMessages());
 
-        ReviewEntity entity = repository.findByCustomerDetails(updateRequest.getCustomerId(), updateRequest.getProductId());
+        ReviewEntity entity = repository.findByCustomerAndProductDetails(updateRequest.getCustomerId(), updateRequest.getProductId());
         log.info(String.valueOf(entity));
         entity.setRating(updateRequest.getRating());
         entity.setReview(updateRequest.getReview());
@@ -75,11 +75,6 @@ public class ReviewService {
         String commercetoolsCustomerId = commercetoolsService.getCommercetoolsCustomer(token);
         if (!commercetoolsCustomerId.equals(cuId))
             throw new UserNotFoundException(ErrorMessages.INVALID_CUSTOMER.getErrorMessages());
-
-        Optional<ReviewEntity> productExist = repository.findByProductId(pId);
-        if (productExist.isEmpty()) {
-            throw new CustomException(ErrorMessages.INVALID_PRODUCT.getErrorMessages());
-        }
 
         Integer status = repository.deleteByProductId(cuId, pId);
         if (status == 0)
