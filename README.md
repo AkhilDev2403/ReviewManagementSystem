@@ -19,12 +19,6 @@ Review Management System for handling the rating and review
 
    http://localhost:8714
 
-spring_profiles_active=prod
-PROD_DB_HOST=containers-us-west-190.railway.app
-PROD_DB_PORT=7633
-PROD_DB_NAME=railway
-PROD_DB_PASSWORD=OkacQbl0TddsbUWGjroV
-PROD_DB_USERNAME=postgres
 
 
 ### Swagger API Documentation
