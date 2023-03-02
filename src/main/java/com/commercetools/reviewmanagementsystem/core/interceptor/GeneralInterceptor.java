@@ -23,7 +23,7 @@ public class GeneralInterceptor implements HandlerInterceptor {
         if (request.getHeader("Secret-Key") == null) {
             log.info("No secret-key.");
             response.addHeader("secretKey", "No key available");
-            throw new CustomException(ErrorMessages.INVALID_SECRET.getErrorMessages());
+            throw new CustomException(ErrorMessages.SECRET_NOT_EXISTING.getErrorMessages());
         } else if (request.getHeader("Secret-Key").equals(secretAuthKey)) {
             response.addHeader("Interceptor", "Key - Success");
             log.info("Validation Success.");

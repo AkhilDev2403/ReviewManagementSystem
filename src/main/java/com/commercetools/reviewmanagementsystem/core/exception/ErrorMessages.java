@@ -9,6 +9,7 @@ public enum ErrorMessages {
     REVIEW_NOT_FOUND("REVIEW NOT FOUND TO GET DELETED"),
     NO_REVIEW_FOUND("There is no review given for the specified product"),
     INVALID_SECRET("INVALID SECRET"),
+    SECRET_NOT_EXISTING("SECRET-KEY DOESN'T EXIST"),
     FAILED("OPERATION FAILED");
 
     ErrorMessages(String errorMessages) {
