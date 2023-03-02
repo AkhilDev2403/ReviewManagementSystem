@@ -24,8 +24,8 @@ import java.util.Map;
 @RequestMapping("reviews")
 public class ReviewController {
 
-    @Value("${Secret_Auth_Key}")
-    private String secretAuthKey;
+//    @Value("${Secret_Auth_Key}")
+//    private String secretAuthKey;
 
     @Autowired
     ReviewService reviewService;
