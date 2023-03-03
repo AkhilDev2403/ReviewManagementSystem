@@ -11,8 +11,8 @@ import org.springframework.web.servlet.config.annotation.WebMvcConfigurerAdapter
 @Configuration
 public class CorsConfig {
 
-    @Value("${Secret_Auth_Key}")
-    private String Secret_Auth_Key;
+//    @Value("${Secret_Auth_Key}")
+//    private String Secret_Auth_Key;
 
     @Bean
     public WebMvcConfigurer corsConfigurer() {
@@ -22,8 +22,8 @@ public class CorsConfig {
                 registry.addMapping("/reviews/**")
                         .allowedOrigins("http://localhost:8080")
                         .allowedMethods("GET", "POST", "DELETE", "PUT")
-                        .allowedHeaders(Secret_Auth_Key)
-                        .exposedHeaders(Secret_Auth_Key);
+                        .allowedHeaders("Secret-Key")
+                        .exposedHeaders("Secret-Key");
             }
         };
     }
