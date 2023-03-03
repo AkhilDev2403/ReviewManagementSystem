@@ -20,10 +20,9 @@ public class CorsConfig {
             @Override
             public void addCorsMappings(CorsRegistry registry) {
                 registry.addMapping("/reviews/**")
-                        .allowedOrigins("http://localhost:8080")
+                        .allowedOrigins("http://localhost:8714")
                         .allowedMethods("GET", "POST", "DELETE", "PUT")
-                        .allowedHeaders("Secret-Key")
-                        .exposedHeaders("Secret-Key");
+                        .allowedHeaders("Access-Control-Allow-Origin", "*");
             }
         };
     }
