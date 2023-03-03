@@ -19,7 +19,7 @@ import java.util.List;
 import java.util.Map;
 
 @RestController
-@RequestMapping("reviews")
+@RequestMapping("/reviews")
 public class ReviewController {
 
     @Autowired
