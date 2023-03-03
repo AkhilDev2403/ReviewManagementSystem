@@ -22,7 +22,7 @@ public class CorsConfig {
                 registry.addMapping("/reviews/**")
                         .allowedOrigins("http://localhost:8714")
                         .allowedMethods("GET", "POST", "DELETE", "PUT")
-                        .allowedHeaders("Access-Control-Allow-Origin", "*");
+                        .allowedHeaders("Access-Control-Allow-Origin", "Secret-Key");
             }
         };
     }
