@@ -6,6 +6,7 @@ import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
 
 import javax.transaction.Transactional;
+import java.util.List;
 import java.util.Optional;
 
 public interface ReviewRepository extends JpaRepository<ReviewEntity, Long> {
@@ -29,5 +30,5 @@ public interface ReviewRepository extends JpaRepository<ReviewEntity, Long> {
     Optional<ReviewEntity> findByProductAndUserAlreadyExist(String productId, String customerId);
 
     @Query(value = "select * from rating_review r where r.product_id = ?1", nativeQuery = true)
-    Optional<ReviewEntity> findByProductId(String productId);
+    List<ReviewEntity> findByProductId(String productId);
 }

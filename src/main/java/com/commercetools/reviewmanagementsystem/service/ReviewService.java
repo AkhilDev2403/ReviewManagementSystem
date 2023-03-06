@@ -90,17 +90,21 @@ public class ReviewService {
         return finalAvgRating;
     }
 
-    public List<ReviewDto> getAllReview(Integer page, Integer size) {
+    public List<ReviewDto> getAllReview(Integer page, Integer size, String productId) {
+        List<ReviewEntity> reviewEntityList = repository.findByProductId(productId);
+        if(reviewEntityList.isEmpty())
+            throw new CustomException(ErrorMessages.NO_REVIEWS.getErrorMessages());
         List<ReviewDto> returnValue = new ArrayList<>();
         Pageable pageable = PageRequest.of(page, size);
         Page<ReviewEntity> reviewList = repository.findAll(pageable);
         List<ReviewEntity> entityList = reviewList.getContent();
-        for (ReviewEntity reviewEntity : entityList) {
+        for (ReviewEntity reviewEntity : reviewEntityList) {
             ReviewDto reviewDto = new ModelMapper().map(reviewEntity, ReviewDto.class);
             returnValue.add(reviewDto);
         }
         return returnValue;
     }
+
 
 }
 
