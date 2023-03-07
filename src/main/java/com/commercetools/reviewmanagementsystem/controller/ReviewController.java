@@ -20,6 +20,7 @@ import java.util.Map;
 
 @RestController
 @RequestMapping(value = "/reviews")
+@CrossOrigin(originPatterns = "http://localhost:8714")
 public class ReviewController {
 
     @Autowired
