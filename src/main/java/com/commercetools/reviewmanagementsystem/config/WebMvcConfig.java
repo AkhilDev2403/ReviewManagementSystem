@@ -9,10 +9,11 @@ public class WebMvcConfig implements WebMvcConfigurer {
 
     @Override
     public void addCorsMappings(CorsRegistry registry) {
-        registry.addMapping("/**").allowedMethods("*")
-                .allowedHeaders("Content-Type", "X-Requested-With", "accept", "Origin", "Access-Control-Request-Method",
-                        "Access-Control-Request-Headers")
-                .exposedHeaders("Access-Control-Allow-Origin", "Access-Control-Allow-Credentials")
-                .allowedOrigins("*");
+        registry.addMapping("/reviews/**")
+                .allowedOrigins("https://reviewmanagementsystem-production.up.railway.app/")
+                .allowedMethods("PUT", "DELETE", "POST", "GET")
+                .allowedHeaders("token")
+                .exposedHeaders("token")
+                .allowCredentials(true).maxAge(3600);
     }
 }
