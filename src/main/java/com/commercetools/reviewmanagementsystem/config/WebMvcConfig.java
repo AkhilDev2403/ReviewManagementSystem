@@ -15,7 +15,8 @@ public class WebMvcConfig implements WebMvcConfigurer {
         registry.addMapping("/reviews/**")
                 .allowedOrigins("https://reviewmanagementsystem-production.up.railway.app/", "http://localhost:8080", "http://localhost:8714")
                 .allowedMethods("PUT", "DELETE", "POST", "GET")
-                .allowedHeaders("Access-Control-Allow-Headers", "*");
+                .allowedHeaders("Access-Control-Allow-Headers", "*")
+                .exposedHeaders("Access-Control-Allow-Headers", "token");
     }
 
 
