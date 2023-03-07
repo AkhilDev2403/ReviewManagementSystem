@@ -15,8 +15,8 @@ import java.util.Enumeration;
 @Component
 public class GeneralInterceptor implements HandlerInterceptor {
 
-    @Value("${token}")
-    private String token;
+    @Value("${Secret_Auth_Key}")
+    private String Secret_Auth_Key;
 
     @Override
     public boolean preHandle(HttpServletRequest request, HttpServletResponse response, Object handler) throws Exception {
@@ -28,16 +28,16 @@ public class GeneralInterceptor implements HandlerInterceptor {
         }
 
         if (request.getHeader("token") == null) {
-            log.info("No secret-key.");
-            response.addHeader("secretKey", "No key available");
+            log.info("No token.");
+            response.addHeader("token", "No token available");
             throw new CustomException(ErrorMessages.SECRET_NOT_EXISTING.getErrorMessages());
-        } else if (request.getHeader("token").equals(token)) {
-            response.addHeader("Interceptor", "Key - Success");
+        } else if (request.getHeader("token").equals(Secret_Auth_Key)) {
+            response.addHeader("Interceptor", "token - Success");
             log.info("Validation Success.");
             return true;
         } else {
-            log.info("Validation Error. Invalid Key");
-            response.addHeader("Interceptor", "Invalid Key");
+            log.info("Validation Error. Invalid token");
+            response.addHeader("Interceptor", "Invalid token");
             throw new CustomException(ErrorMessages.INVALID_SECRET.getErrorMessages());
         }
     }

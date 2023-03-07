@@ -51,9 +51,9 @@ public class ReviewService {
     }
 
 
-    public ReviewEntity updateReview(UpdateReviewRequest updateRequest, String token) {
+    public ReviewEntity updateReview(UpdateReviewRequest updateRequest, String authorization) {
         Optional<ReviewEntity> productExist = repository.findByCustomerIdAndProductId(updateRequest.getCustomerId(), updateRequest.getProductId());
-        String commercetoolsCustomerId = commercetoolsService.getCommercetoolsCustomer(token);
+        String commercetoolsCustomerId = commercetoolsService.getCommercetoolsCustomer(authorization);
         String customerId = updateRequest.getCustomerId();
         if (!commercetoolsCustomerId.equals(customerId))
             throw new UserNotFoundException(ErrorMessages.INVALID_CUSTOMER.getErrorMessages());
@@ -71,8 +71,8 @@ public class ReviewService {
         return repository.save(entity);
     }
 
-    public Object deleteReview(String cuId, String pId, String token) {
-        String commercetoolsCustomerId = commercetoolsService.getCommercetoolsCustomer(token);
+    public Object deleteReview(String cuId, String pId, String authorization) {
+        String commercetoolsCustomerId = commercetoolsService.getCommercetoolsCustomer(authorization);
         if (!commercetoolsCustomerId.equals(cuId))
             throw new UserNotFoundException(ErrorMessages.INVALID_CUSTOMER.getErrorMessages());
 
