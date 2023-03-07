@@ -13,10 +13,9 @@ public class WebMvcConfig implements WebMvcConfigurer {
     @Override
     public void addCorsMappings(CorsRegistry registry) {
         registry.addMapping("/reviews/**")
-                .allowedOrigins("https://reviewmanagementsystem-production.up.railway.app/", "http://localhost:8080")
+                .allowedOrigins("https://reviewmanagementsystem-production.up.railway.app/", "http://localhost:8080", "http://localhost:8714")
                 .allowedMethods("PUT", "DELETE", "POST", "GET")
-                .allowedHeaders("Access-Control-Allow-Headers", "*")
-                .exposedHeaders("token");
+                .allowedHeaders("Access-Control-Allow-Headers", "*");
     }
 
 
