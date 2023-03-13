@@ -51,12 +51,11 @@ public class ReviewController {
         return ResponseEntity.ok(new ApiResponse(data, Constants.SUCCESS, CustomHttpStatus.SUCCESS.ordinal()));
     }
 
-    @GetMapping("/getAllReviews/{productId}")
+    @GetMapping("/getAllReviews")
     public List<ReviewResponse> getAllReviews(@RequestParam(value = "page", defaultValue = "0") int page,
-                                              @RequestParam(value = "size", defaultValue = "2") int size,
-                                              @PathVariable(value = "productId") String productId) {
+                                              @RequestParam(value = "size", defaultValue = "2") int size) {
         List<ReviewResponse> returnValue = new ArrayList<>();
-        List<ReviewDto> reviews = reviewService.getAllReview(page, size, productId);
+        List<ReviewDto> reviews = reviewService.getAllReview(page, size);
         for (ReviewDto reviewDto : reviews) {
             ReviewResponse reviewResponse = new ModelMapper().map(reviewDto, ReviewResponse.class);
             returnValue.add(reviewResponse);
