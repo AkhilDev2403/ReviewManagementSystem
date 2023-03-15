@@ -9,6 +9,8 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 public class ReviewResponse {
 
+    private String firstName;
+
     private String customerId;
 
     private String review;

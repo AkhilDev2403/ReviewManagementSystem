@@ -9,6 +9,8 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 public class CreateReviewRequest {
 
+    private String firstName;
+
     private String customerId;
 
     private String productId;
