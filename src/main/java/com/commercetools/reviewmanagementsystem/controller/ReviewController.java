@@ -53,9 +53,10 @@ public class ReviewController {
 
     @GetMapping("/getAllReviews")
     public List<ReviewResponse> getAllReviews(@RequestParam(value = "page", defaultValue = "0") int page,
-                                              @RequestParam(value = "size", defaultValue = "2") int size) {
+                                              @RequestParam(value = "size", defaultValue = "2") int size,
+                                              @PathVariable(value = "productId") String productId) {
         List<ReviewResponse> returnValue = new ArrayList<>();
-        List<ReviewDto> reviews = reviewService.getAllReview(page, size);
+        List<ReviewDto> reviews = reviewService.getAllReview(page, size, productId);
         for (ReviewDto reviewDto : reviews) {
             ReviewResponse reviewResponse = new ModelMapper().map(reviewDto, ReviewResponse.class);
             returnValue.add(reviewResponse);
