@@ -51,7 +51,7 @@ public class ReviewController {
         return ResponseEntity.ok(new ApiResponse(data, Constants.SUCCESS, CustomHttpStatus.SUCCESS.ordinal()));
     }
 
-    @GetMapping("/getAllReviews")
+    @GetMapping("/getAllReviews/productId")
     public List<ReviewResponse> getAllReviews(@RequestParam(value = "page", defaultValue = "0") int page,
                                               @RequestParam(value = "size", defaultValue = "2") int size,
                                               @PathVariable(value = "productId") String productId) {
