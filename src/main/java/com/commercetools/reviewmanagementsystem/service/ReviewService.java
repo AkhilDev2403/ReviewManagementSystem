@@ -102,6 +102,7 @@ public class ReviewService {
             ReviewDto reviewDto = new ModelMapper().map(reviewEntity, ReviewDto.class);
             returnValue.add(reviewDto);
         }
+
         return returnValue;
     }
 
