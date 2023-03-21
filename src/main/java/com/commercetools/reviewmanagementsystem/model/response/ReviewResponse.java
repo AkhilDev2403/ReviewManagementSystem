@@ -10,7 +10,7 @@ import lombok.NoArgsConstructor;
 public class ReviewResponse {
 
 
-    private String customerId;
+    private String firstName;
 
     private String review;
 
